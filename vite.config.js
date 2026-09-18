@@ -130,8 +130,19 @@ const setupMiddlewares = (server) => {
         const keys = Object.keys(values).filter(k => colNames.includes(k) && k !== pkColumn);
         if (!keys.length) throw new Error('No values to update');
 
+        const sanitizedValues = { ...values };
+        cols.forEach(col => {
+          const k = col.Field;
+          if (k in sanitizedValues) {
+            const isNumeric = /int|decimal|float|double|numeric/i.test(col.Type || '');
+            if (isNumeric && (sanitizedValues[k] === '' || sanitizedValues[k] === null || sanitizedValues[k] === undefined)) {
+              sanitizedValues[k] = col.Null === 'YES' ? null : 0;
+            }
+          }
+        });
+
         const sql = `UPDATE \`${table}\` SET ${keys.map(k => `\`${k}\` = ?`).join(', ')} WHERE \`${pkColumn}\` = ?`;
-        const [r] = await conn.query(sql, [...keys.map(k => values[k]), pkValue]);
+        const [r] = await conn.query(sql, [...keys.map(k => sanitizedValues[k]), pkValue]);
         return send(res, { success: true, data: { affectedRows: r.affectedRows } });
       }
 

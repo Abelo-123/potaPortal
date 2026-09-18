@@ -1319,7 +1319,22 @@ async function syncOrderStatus(orderId, row, pkColumn, pkValue) {
     const data = await smmApi('status', { order: orderId });
     if (data.error) throw new Error(data.error);
     const updates = {};
-    ['status','remains','charge','start_count'].forEach(k => { if (state.db.schema.some(s => s.Field === k) && data[k] !== undefined) updates[k] = data[k]; });
+    ['status','remains','charge','start_count'].forEach(k => {
+      const colDef = state.db.schema.find(s => s.Field === k);
+      if (colDef && data[k] !== undefined && data[k] !== null) {
+        let val = data[k];
+        const isNumeric = /int|decimal|float|double|numeric/i.test(colDef.Type || '');
+        if (isNumeric) {
+          if (typeof val === 'string' && val.trim() === '') {
+            val = colDef.Null === 'YES' ? null : 0;
+          } else {
+            const num = Number(val);
+            val = isNaN(num) ? (colDef.Null === 'YES' ? null : 0) : num;
+          }
+        }
+        updates[k] = val;
+      }
+    });
     if (Object.keys(updates).length > 0) {
       Object.assign(row, updates);
       await dbApi('/api/db/update', { table: state.db.currentTable, values: updates, pkColumn, pkValue });
