@@ -1322,7 +1322,6 @@ async function syncOrderStatus(orderId, row, pkColumn, pkValue) {
     ['status','remains','charge','start_count'].forEach(k => { if (state.db.schema.some(s => s.Field === k) && data[k] !== undefined) updates[k] = data[k]; });
     if (Object.keys(updates).length > 0) {
       Object.assign(row, updates);
-      state.db.rowIdx = buildRowIndex(state.db.rows);
       await dbApi('/api/db/update', { table: state.db.currentTable, values: updates, pkColumn, pkValue });
       toast(`Order #${orderId} synced to database!`, 'success'); loadData();
     } else {
