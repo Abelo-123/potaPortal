@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard v6</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root {
+    --primary: #ea580c; --primary-dark: #c2410c; --primary-light: #fff7ed;
+    --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --muted: #64748b;
+    --border: #e2e8f0; --border-light: #f1f5f9;
+    --danger: #ef4444; --success: #10b981; --warning: #f59e0b;
+    --sidebar-w: 260px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; height: 100vh; overflow: hidden; }
+  button { cursor: pointer; font-family: inherit; border: none; }
+  input, select, textarea { font-family: inherit; font-size: 0.875rem; }
+
+  /* Lock Screen */
+  #lock-screen { position: fixed; inset: 0; z-index: 1000; background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%); display: flex; align-items: center; justify-content: center; }
+  #lock-screen.hidden { display: none; }
+  .login-card { background: white; padding: 3rem; border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35); text-align: center; max-width: 420px; width: 90%; }
+  .login-card h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text); }
+  .login-card p { color: var(--muted); margin-bottom: 2rem; font-size: 0.9rem; }
+  .login-card .logo-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+  #google-btn-container { display: flex; justify-content: center; min-height: 44px; }
+
+  /* App Shell */
+  #app-root { height: 100vh; display: flex; flex-direction: column; }
+  .topnav {
+    height: var(--topnav-h, 56px);
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .topnav .logo { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+  .view-tabs { display: flex; gap: 0.25rem; margin-left: 1rem; }
+  .view-tab { padding: 0.5rem 1rem; border-radius: 0.5rem; background: transparent; color: var(--muted); font-weight: 600; font-size: 0.875rem; }
+  .view-tab.active { background: var(--primary-light); color: var(--primary); }
+  .profile-bar { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; justify-content: flex-end; }
+  .profile-bar select { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; background: white; min-width: 160px; font-weight: 500; }
+  .icon-btn { width: 36px; height: 36px; border-radius: 0.5rem; background: var(--border-light); display: inline-flex; align-items: center; justify-content: center; color: var(--text); font-size: 1rem; transition: all 0.2s; }
+  .icon-btn:hover { background: var(--border); }
+  .icon-btn.primary { background: var(--primary); color: white; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--border); object-fit: cover; }
+
+  .safe-mode-toggle { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; border-radius: 0.5rem; background: var(--border-light); font-size: 0.8125rem; font-weight: 600; cursor: pointer; user-select: none; }
+  .safe-mode-toggle.on { background: #d1fae5; color: #065f46; }
+  .safe-mode-toggle.off { background: #fee2e2; color: #991b1b; }
+  .toggle-switch { width: 36px; height: 20px; background: #cbd5e1; border-radius: 10px; position: relative; transition: background 0.2s; flex-shrink: 0; }
+  .toggle-switch.on { background: var(--success); }
+  .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: transform 0.2s; }
+  .toggle-switch.on::after { transform: translateX(16px); }
+
+  .main { flex: 1; min-height: 0; display: flex; }
+  .sidebar { width: var(--sidebar-w); background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; }
+  .sidebar-header { padding: 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .sidebar-header h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .sidebar-content { overflow-y: auto; padding: 0.5rem; flex: 1; }
+  .table-item { padding: 0.625rem 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; cursor: pointer; margin-bottom: 0.125rem; display: flex; align-items: center; gap: 0.5rem; transition: all 0.15s; }
+  .table-item:hover { background: var(--border-light); }
+  .table-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+  .table-item::before { content: '📋'; font-size: 0.75rem; }
+  .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 55; }
+  .sidebar-backdrop.show { display: block; }
+
+  .content { flex: 1; min-width: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .view-panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+  .view-panel.active { display: flex; }
+
+  .toolbar {
+    padding: 0.75rem 1.25rem;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .toolbar-row-1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .toolbar-left .title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow: hidden;
+  }
+
+  .toolbar-left .title span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .toolbar-right {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .toolbar-row-2 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  .btn { padding: 0.5rem 0.875rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.8125rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.375rem; transition: all 0.15s; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-secondary { background: var(--border-light); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--border); }
+  .btn-danger { background: var(--danger); color: white; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-success { background: var(--success); color: white; }
+  .btn-success:hover { background: #059669; }
+  .btn-sm { padding: 0.325rem 0.625rem; font-size: 0.75rem; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .mobile-only { display: none; }
+
+  .filter-row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+  .filter-row select, .filter-row input { padding: 0.425rem 0.625rem; border: 1px solid var(--border); border-radius: 0.5rem; background: white; }
+
+  .grid-wrap { flex: 1; overflow: auto; background: white; position: relative; }
+  .grid { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+  .grid thead { position: sticky; top: 0; background: #f8fafc; z-index: 2; }
+  .grid th { padding: 0.625rem 0.75rem; text-align: left; font-weight: 600; color: var(--muted); border-bottom: 2px solid var(--border); white-space: nowrap; cursor: pointer; }
+  .grid td { padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--border-light); max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; position: relative; }
+  .grid td:hover { background: #fffbeb; }
+  .grid td.pk-cell, .grid td.readonly-cell { cursor: default; background: #fafafa; color: var(--muted); }
+  .grid td.readonly-cell::after { content: '🔒'; margin-left: 0.25rem; font-size: 0.7rem; opacity: 0.5; }
+  .grid .null-val { color: var(--muted); font-style: italic; }
+  .grid .actions { display: flex; gap: 0.25rem; align-items: center; }
+
+  .inline-edit-input { width: 100%; padding: 0.35rem 0.5rem; border: 2px solid var(--primary); border-radius: 0.375rem; font-size: 0.8125rem; outline: none; background: white; }
+  @keyframes flashSuccess { 0% { background-color: #d1fae5; } 100% { background-color: transparent; } }
+  @keyframes flashError { 0% { background-color: #fee2e2; } 100% { background-color: transparent; } }
+  .flash-success { animation: flashSuccess 1s ease-out; }
+  .flash-error { animation: flashError 1s ease-out; }
+
+  .pagination { padding: 0.75rem 1.25rem; background: var(--card); border-top: 1px solid var(--border); display: flex; align-items: center; gap: 0.75rem; font-size: 0.8125rem; color: var(--muted); flex-wrap: wrap; }
+  .pagination .spacer { flex: 1; }
+  .preloader {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(3px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .preloader.active {
+    display: flex;
+  }
+
+  .spinner-ring {
+    width: 44px;
+    height: 44px;
+    border: 4px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .spinner-inline { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; }
+
+  /* Confirmation Diff Modal */
+  .confirm-meta { font-size: 0.8125rem; color: var(--muted); display: flex; flex-direction: column; gap: 0.375rem; margin-bottom: 1rem; }
+  .confirm-meta strong { color: var(--text); }
+  .diff-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .diff-old, .diff-new { padding: 0.75rem; border-radius: 0.5rem; font-size: 0.8125rem; font-weight: 600; }
+  .diff-old { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+  .diff-new { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+  .badge-old, .badge-new { display: inline-block; margin-top: 0.375rem; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-family: ui-monospace, monospace; font-weight: 500; word-break: break-all; max-width: 100%; }
+  .badge-old { background: #fee2e2; }
+  .badge-new { background: #dcfce7; }
+  .kbd-hint { margin-top: 0.875rem; font-size: 0.75rem; color: var(--muted); }
+
+  /* Charge Calculator */
+  .charge-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.625rem 0.875rem; border-radius: 0.625rem; background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; font-weight: 700; font-size: 0.875rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .charge-badge.muted { background: #f1f5f9; border-color: var(--border); color: var(--muted); font-weight: 500; }
+  .qty-warning { margin-top: -0.5rem; margin-bottom: 1rem; padding: 0.5rem 0.75rem; border-radius: 0.5rem; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; font-size: 0.8125rem; font-weight: 600; display: none; }
+  .qty-warning.show { display: block; }
+
+  /* Modals & Toasts */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: white; border-radius: 1rem; width: 100%; max-width: 560px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
+  .modal.large { max-width: 800px; }
+  .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+  .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 0.5rem; }
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-bottom: 0.375rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.625rem 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; outline: none; }
+  .form-group textarea { min-height: 80px; font-family: ui-monospace, monospace; resize: vertical; }
+  .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 1rem; }
+  .section-divider { margin: 1.25rem 0; padding-top: 1rem; border-top: 1px dashed var(--border); }
+  .section-divider h4 { font-size: 0.8rem; text-transform: uppercase; color: var(--primary); margin-bottom: 1rem; }
+  .account-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .account-card { padding: 0.875rem 1rem; border: 1px solid var(--border); border-radius: 0.625rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  .account-card.active { border-color: var(--primary); background: var(--primary-light); }
+  .account-card .name { font-weight: 600; flex: 1; }
+  .account-card .meta { font-size: 0.75rem; color: var(--muted); }
+  .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 200; display: flex; flex-direction: column; gap: 0.5rem; }
+  .toast { padding: 0.75rem 1rem; border-radius: 0.5rem; color: white; font-size: 0.875rem; font-weight: 500; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); min-width: 260px; max-width: 90vw; animation: toastIn 0.3s ease-out; display: flex; align-items: center; gap: 0.5rem; }
+  .toast.success { background: var(--success); } .toast.error { background: var(--danger); } .toast.info { background: #3b82f6; }
+  .toast.leaving { animation: toastOut 0.3s ease-in forwards; }
+  @keyframes toastIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes toastOut { to { transform: translateX(120%); opacity: 0; } }
+  .empty { padding: 3rem 2rem; text-align: center; color: var(--muted); }
+  .raw-viewer { background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.5rem; font-family: ui-monospace, monospace; font-size: 0.8rem; max-height: 400px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
+
+  /* API Panel */
+  .api-panel { padding: 1.5rem; overflow-y: auto; flex: 1; }
+  .api-container { background: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin-bottom: 1rem; }
+  .api-container-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); background: #f8fafc; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .api-container-body { padding: 1.5rem; }
+  .api-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+  .api-form-grid .full { grid-column: 1 / -1; }
+  .api-container-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--border); background: #f8fafc; display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap; }
+  .service-type-note { padding: 0.75rem 1rem; background: var(--primary-light); border: 1px solid #fed7aa; border-radius: 0.5rem; font-size: 0.8125rem; color: #9a3412; margin-bottom: 1rem; }
+  .results-area { background: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; }
+  .results-header { padding: 0.75rem 1rem; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+
+  /* Virtualized Services */
+  .sv-toolbar { display: flex; align-items: center; gap: 1rem; padding: .75rem 1rem; background: #f8fafc; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .sv-toolbar input { flex: 1; min-width: 180px; padding: .5rem .75rem; border: 1px solid var(--border); border-radius: .5rem; }
+  .match-badge { font-size: .8rem; font-weight: 600; color: var(--primary); background: var(--primary-light); padding: .25rem .625rem; border-radius: 1rem; white-space: nowrap; }
+  .sync-badge { font-size: .75rem; font-weight: 600; color: #d97706; background: #fef3c7; padding: .25rem .625rem; border-radius: 1rem; animation: pulse 2s infinite; }
+  .sync-badge.hidden { display: none; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
+  .sv-wrap { position: relative; overflow: auto; height: 56vh; overscroll-behavior: contain; background: #fff; }
+  .sv-inner { min-width: 1120px; }
+  .sv-head, .sv-row { display: grid; align-items: center; grid-template-columns: 80px minmax(240px,2fr) minmax(180px,1.5fr) 120px 90px 90px 90px 80px 80px 100px; }
+  .sv-head { position: sticky; top: 0; z-index: 3; background: #f8fafc; height: 40px; border-bottom: 2px solid var(--border); }
+  .sv-hcell { padding: 0 .75rem; font-weight: 600; color: var(--muted); font-size: .8125rem; white-space: nowrap; }
+  .sv-hcell.sortable { cursor: pointer; user-select: none; }
+  .sv-hcell .sort-ind { margin-left: .25rem; font-size: .7rem; color: var(--primary); }
+  .sv-spacer { position: relative; overflow: hidden; }
+  .sv-window { position: absolute; top: 0; left: 0; right: 0; will-change: transform; }
+  .sv-row { height: 40px; border-bottom: 1px solid var(--border-light); contain: layout style; }
+  .sv-row:hover { background: #fffbeb; }
+  .sv-cell { padding: 0 .75rem; font-size: .8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sv-cell .order-btn { padding: 0.3rem 0.6rem; font-size: 0.7rem; background: var(--success); color: white; border-radius: 0.375rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+  .sv-cell .order-btn:hover { background: #059669; }
+
+  /* SQL Drawer */
+  .sql-drawer { border-top: 2px solid var(--border); background: var(--card); max-height: 56px; overflow: hidden; transition: max-height 0.3s ease-out; flex-shrink: 0; }
+  .sql-drawer.open { max-height: 400px; }
+  .sql-drawer-header { padding: 1rem 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: space-between; background: #f8fafc; user-select: none; }
+  .sql-drawer-header h3 { font-size: 0.9rem; }
+  .sql-drawer-body { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+  .sql-textarea { width: 100%; min-height: 110px; padding: 0.75rem; font-family: ui-monospace, monospace; font-size: 0.875rem; border: 1px solid var(--border); border-radius: 0.5rem; background: #1e293b; color: #e2e8f0; resize: vertical; outline: none; }
+  .sql-output { padding: 0.75rem; background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; font-size: 0.8125rem; max-height: 150px; overflow: auto; }
+  .sql-output.error { background: #fee2e2; color: #991b1b; }
+  .sql-output.success { background: #d1fae5; color: #065f46; }
+
+  /* ===== OMNI-SEARCH BAR ===== */
+  .omni-bar {
+    position: relative; display: flex; align-items: center; gap: .5rem;
+    flex: 1 1 320px; max-width: 640px; height: 38px; padding: 0 .625rem;
+    background: #fff; border: 1px solid var(--border); border-radius: .625rem;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .omni-bar:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(234,88,12,.12); }
+  .omni-icon { font-size: .85rem; opacity: .6; flex-shrink: 0; }
+  .omni-bar input {
+    flex: 1; min-width: 0; height: 100%; border: none; outline: none;
+    background: transparent; font-size: .875rem; padding-right: 30px;
+  }
+  .omni-clear {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--border-light); color: var(--muted); font-size: .65rem;
+    display: none; align-items: center; justify-content: center; transition: all .15s; cursor: pointer; border: none;
+  }
+  .omni-clear.show { display: inline-flex; }
+  .omni-clear:hover { background: var(--border); color: var(--text); }
+
+  .db-match-badge {
+    font-size: .75rem; font-weight: 700; color: var(--primary);
+    background: var(--primary-light); border: 1px solid #fed7aa;
+    padding: .3rem .6rem; border-radius: 999px; white-space: nowrap;
+  }
+  .db-match-badge.deep { color: #1d4ed8; background: #eff6ff; border-color: #bfdbfe; }
+  .db-match-badge.zero { color: #991b1b; background: #fef2f2; border-color: #fecaca; }
+
+  mark.search-match {
+    background: #fef08a; color: inherit; font-weight: 600;
+    padding: 0 2px; border-radius: 3px;
+  }
+
+  /* ============ MOBILE-FIRST RESPONSIVE (<768px) ============ */
+  @media (max-width: 768px) {
+    .topnav {
+      padding: 0.5rem 0.75rem;
+      gap: 0.5rem;
+    }
+
+    .topnav .logo {
+      font-size: 1rem;
+    }
+
+    .view-tabs {
+      order: 10;
+      width: 100%;
+      margin-left: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.25rem;
+      background: var(--border-light);
+      padding: 0.25rem;
+      border-radius: 999px;
+    }
+
+    .view-tab {
+      text-align: center;
+      padding: 0.75rem 0.5rem;
+      border-radius: 999px;
+      min-height: 44px;
+    }
+
+    .profile-bar {
+      gap: 0.5rem;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 0.25rem;
+    }
+
+    .profile-bar select {
+      min-width: 110px;
+      max-width: 150px;
+      flex-shrink: 0;
+    }
+
+    .safe-mode-toggle {
+      flex-shrink: 0;
+    }
+
+    .safe-mode-toggle .sm-label {
+      display: none;
+    }
+
+    /* Sidebar → off-canvas drawer */
+    .sidebar { position: fixed; top: 0; left: 0; bottom: 0; z-index: 60; width: min(300px, 85vw); transform: translateX(-105%); transition: transform 0.25s ease; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+    .sidebar.open { transform: translateX(0); }
+    .mobile-only { display: inline-flex !important; }
+
+    .toolbar {
+      padding: 0.5rem 0.75rem;
+      gap: 0.5rem;
+    }
+
+    .toolbar-row-1 {
+      gap: 0.5rem;
+    }
+
+    .toolbar-left .title {
+      font-size: 0.95rem;
+    }
+
+    .toolbar-right {
+      margin-left: auto;
+    }
+
+    .toolbar-row-2 {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+    }
+
+    .omni-bar {
+      width: 100%;
+      max-width: none;
+      height: 42px;
+      flex: 0 0 auto;
+    }
+
+    .omni-bar input {
+      font-size: 16px;
+    }
+
+    .db-match-badge {
+      align-self: flex-start;
+    }
+
+    .grid-wrap, .sv-wrap {
+      -webkit-overflow-scrolling: touch;
+      background-color: #fff;
+      background-image:
+        linear-gradient(90deg, #fff 30%, rgba(255,255,255,0)),
+        linear-gradient(270deg, #fff 30%, rgba(255,255,255,0)),
+        linear-gradient(90deg, rgba(15,23,42,.14), rgba(15,23,42,0)),
+        linear-gradient(270deg, rgba(15,23,42,.14), rgba(15,23,42,0));
+      background-position: left center, right center, left center, right center;
+      background-size: 24px 100%, 24px 100%, 12px 100%, 12px 100%;
+      background-repeat: no-repeat;
+      background-attachment: local, local, scroll, scroll;
+    }
+    .grid td, .grid th { max-width: 200px; }
+    .btn, .icon-btn { min-height: 44px; }
+    .btn-sm { min-height: 44px; padding: 0.5rem 0.75rem; }
+    .sv-row { height: 52px; }
+    .sv-cell .order-btn { min-height: 44px; padding: 0.5rem 0.75rem; font-size: 0.75rem; }
+    .sv-wrap { height: 48vh; }
+
+    .form-grid, .api-form-grid { grid-template-columns: 1fr; }
+    input, select, textarea { font-size: 16px; }
+    .diff-row { grid-template-columns: 1fr; }
+    .api-panel { padding: 0.75rem; }
+    .modal { max-width: 100%; }
+    .login-card { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="lock-screen">
+  <div class="login-card">
+    <div class="logo-icon">⚡</div>
+    <h1>Emergency Admin Portal</h1>
+    <p>Sign in with your authorized Google account to access the dashboard.</p>
+    <div id="google-btn-container"></div>
+  </div>
+</div>
+
+<div id="app-root" style="display: none;">
+<nav class="topnav">
+  <div class="logo">⚡ Admin v6</div>
+  <div class="view-tabs">
+    <button class="view-tab active" data-view="db">🗄️ Database</button>
+    <button class="view-tab" data-view="api">🌐 SMM API</button>
+  </div>
+  <div class="profile-bar">
+    <div class="safe-mode-toggle on" id="safe-mode-toggle">
+      <span class="sm-label">🛡️ Safe Mode</span>
+      <div class="toggle-switch on" id="safe-mode-switch"></div>
+    </div>
+    <select id="account-select"></select>
+    <button class="icon-btn primary" id="btn-add-account" title="Add Account">➕</button>
+    <button class="icon-btn" id="btn-manage-accounts" title="Manage Accounts">⚙️</button>
+    <img id="user-avatar" class="user-avatar" src="" alt="User" style="display:none;">
+    <button class="icon-btn" id="btn-logout" title="Sign Out">🚪</button>
+  </div>
+</nav>
+
+<div class="main">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>Tables</h3>
+      <button class="icon-btn" id="btn-refresh-tables" style="width:28px;height:28px;font-size:.8rem;">🔄</button>
+    </div>
+    <div class="sidebar-content" id="table-list"></div>
+  </aside>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+  <div class="content">
+    <div class="view-panel active" id="view-db">
+      <div class="toolbar">
+        <div class="toolbar-row-1">
+          <div class="toolbar-left">
+            <button class="btn btn-secondary btn-sm mobile-only" id="btn-mobile-tables">☰ Tables</button>
+            <div class="title">
+              <span id="current-table-name">Select a table</span>
+              <span id="row-count" style="font-size:.75rem;color:var(--muted);font-weight:500;"></span>
+            </div>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn btn-primary btn-sm" id="btn-insert-row">➕ Insert</button>
+            <button class="btn btn-secondary btn-sm" id="btn-refresh-data">🔄 Refresh</button>
+          </div>
+        </div>
+        <div class="toolbar-row-2">
+          <div class="omni-bar">
+            <span class="omni-icon">🔍</span>
+            <input type="text" id="omni-input" autocomplete="off"
+                   placeholder="Search anything in this table...">
+            <button class="omni-clear" id="omni-clear" title="Clear search">✖</button>
+          </div>
+          <span class="db-match-badge" id="db-match-badge"></span>
+        </div>
+      </div>
+      <div class="grid-wrap" id="grid-wrap">
+        <div class="preloader" id="db-preloader"><div class="spinner-ring"></div></div>
+        <div class="empty"><h3>No table selected</h3><p>Choose a table from the sidebar.</p></div>
+      </div>
+      <div class="pagination">
+        <span id="page-info">Page 1 of 1</span>
+        <div class="spacer"></div>
+        <span>Show</span>
+        <select id="page-size"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select>
+        <button class="btn btn-secondary btn-sm" id="btn-prev">← Prev</button>
+        <button class="btn btn-secondary btn-sm" id="btn-next">Next →</button>
+      </div>
+      <div class="sql-drawer" id="sql-drawer">
+        <div class="sql-drawer-header" id="sql-drawer-toggle"><h3>⚡ Emergency SQL Terminal</h3><span id="sql-drawer-arrow">▼</span></div>
+        <div class="sql-drawer-body">
+          <textarea id="sql-input" class="sql-textarea" placeholder="Enter SQL query..."></textarea>
+          <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+            <button class="btn btn-primary" id="btn-execute-sql">Execute Query</button>
+            <span id="sql-exec-time" style="font-size:.8rem;color:var(--muted);"></span>
+          </div>
+          <div id="sql-output" class="sql-output" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view-panel" id="view-api">
+      <div class="api-panel">
+        <div class="api-container">
+          <div class="api-container-header">
+            <label>Action:</label>
+            <select id="smm-action">
+              <optgroup label="Account"><option value="balance">💰 Check Balance</option><option value="services">📋 List Services (SWR)</option></optgroup>
+              <optgroup label="Orders"><option value="add">➕ Add Order (Dynamic)</option><option value="status">🔍 Order Status</option><option value="status_multi">🔎 Multi Status</option><option value="cancel">❌ Cancel Orders</option></optgroup>
+              <optgroup label="Refills"><option value="refill">🔄 Create Refill</option><option value="refill_multi">🔁 Multi Refill</option><option value="refill_status">📊 Refill Status</option><option value="refill_status_multi">📈 Multi Refill Status</option></optgroup>
+            </select>
+            <div style="flex:1;"></div>
+            <span id="api-active-account" style="font-size:.8rem;color:var(--muted);"></span>
+          </div>
+          <div class="api-container-body" id="smm-form-area"></div>
+          <div class="api-container-footer">
+            <button class="btn btn-secondary" id="btn-toggle-raw">Toggle Raw JSON</button>
+            <button class="btn btn-primary" id="btn-execute-smm">Execute Request</button>
+          </div>
+        </div>
+        <div class="results-area">
+          <div class="results-header"><h4>Response</h4><span id="response-status" style="font-size:.8rem;color:var(--muted);"></span></div>
+          <div id="api-results" style="padding:1rem;"><div class="empty"><h3>No request yet</h3></div></div>
+          <pre id="api-raw" class="raw-viewer" style="display:none;margin:1rem;"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="modal-root">
+  <div class="modal" id="modal">
+    <div class="modal-header"><h2 id="modal-title">Modal</h2><button class="icon-btn" id="modal-close">✕</button></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+/* ==================== CONFIG ==================== */
+const GOOGLE_CLIENT_ID = '704133162276-d9ainm9vtu177atjbc8t0o1hf7cqo55o.apps.googleusercontent.com';
+const ALLOWED_ADMIN_EMAILS = ['abatejohannes@gmail.com'];
+
+/* ==================== FEATURE 2: SERVICE TYPE AUTO-MAP ==================== */
+const SERVICE_TYPE_MAP = {
+  "Default": "0", "Package": "10", "SEO": "1", "Custom Comments": "2",
+  "Mentions with Hashtags": "3", "Mentions User Followers": "7",
+  "Custom Comments Package": "14", "Comment Likes": "15", "Poll": "17",
+  "Invites from Groups": "20", "Subscriptions": "100"
+};
+
+const SERVICE_TYPE_LABELS = {
+  0: 'Default / Standard Order (Link + Quantity)',
+  1: 'SEO / Keyword Search (Link + Quantity + Keywords)',
+  2: 'Custom Comments (Link + Comments List)',
+  3: 'Mentions / Hashtags (Link + Usernames + Hashtags)',
+  7: 'Scraped User Mentions (Link + Scraping URL)',
+  10: 'Package Service (Link Only)',
+  14: 'Custom Comments Package (Link + Comments)',
+  15: 'Comment Likes / Replies (Link + Username + Quantity)',
+  17: 'Poll Voting (Link + Quantity + Answer #)',
+  20: 'Group Posting (Link + Quantity + Groups List)',
+  100: 'Subscription / Auto-Order (Username + Min/Max + Delay)'
+};
+
+/* ==================== STATE ==================== */
+const ACCOUNTS_KEY = 'smm_emergency_accounts', ACTIVE_ACCOUNT_KEY = 'smm_emergency_active_account';
+const SAFE_MODE_KEY = 'smm_safe_mode', SESSION_KEY = 'smm_session';
+const DEFAULTS = {
+  api: { endpoint: 'https://godofpanel.com/api/v2', key: '' },
+  db: { host: 'mysql-257083c1-abatejohannes-ad20.d.aivencloud.com', port: '26020', user: 'avnadmin', password: '', database: 'defaultdb' }
+};
+const state = {
+  accounts: [], activeAccountId: null,
+  safeMode: localStorage.getItem(SAFE_MODE_KEY) !== 'false',
+  user: null,
+  db: {
+    rawTableData: [],
+    tables: [],
+    currentTable: null,
+    schema: [],
+    activeSearchQuery: '',
+    omni: '',
+    clientTerm: '',
+    currentSortColumn: null,
+    currentSortDirection: 'asc',
+    currentPage: 1,
+    pageSize: 25,
+    totalCount: 0,
+    pkColumn: null,
+    protectedCols: [],
+    loading: false
+  },
+  smm: { action: 'balance', serviceType: '0', lastResponse: null, servicesData: [], servicesSearch: '', servicesSort: { column: null, dir: 'ASC' }, servicesSyncing: false }
+};
+
+/* FEATURE 1: active service pricing metadata */
+const orderMeta = { rate: null, min: null, max: null, name: '' };
+
+const saveAccounts = () => { localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(state.accounts)); localStorage.setItem(ACTIVE_ACCOUNT_KEY, state.activeAccountId); };
+const loadAccounts = () => {
+  try {
+    const accs = JSON.parse(localStorage.getItem(ACCOUNTS_KEY) || '[]');
+    const activeId = localStorage.getItem(ACTIVE_ACCOUNT_KEY);
+    if (accs.length) { state.accounts = accs; state.activeAccountId = accs.find(a => a.id === activeId) ? activeId : accs[0].id; return true; }
+  } catch (e) {}
+  state.accounts = [{ id: 'acc_' + Date.now(), name: 'Production (Aiven)', api: { ...DEFAULTS.api }, db: { ...DEFAULTS.db } }];
+  state.activeAccountId = state.accounts[0].id;
+  saveAccounts();
+  return true;
+};
+const getActive = () => state.accounts.find(a => a.id === state.activeAccountId);
+const $ = (id) => document.getElementById(id);
+const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtVal = (v) => v === null || v === undefined ? 'NULL' : String(v);
+
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${{success:'✓',error:'✕',info:'ℹ'}[type] || 'ℹ'}</span><span>${escapeHtml(msg)}</span>`;
+  $('toast-container').appendChild(el);
+  setTimeout(() => { el.classList.add('leaving'); setTimeout(() => el.remove(), 300); }, 3500);
+}
+const showPreloader = () => { state.db.loading = true; $('db-preloader')?.classList.add('active'); };
+const hidePreloader = () => { state.db.loading = false; $('db-preloader')?.classList.remove('active'); };
+
+/* ==================== GOOGLE OAUTH ==================== */
+function decodeJwtPayload(t) { try { return JSON.parse(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))); } catch { return null; } }
+function handleGoogleCredential(res) {
+  const p = decodeJwtPayload(res.credential);
+  if (!p?.email) return toast('Invalid Google credential', 'error');
+  if (ALLOWED_ADMIN_EMAILS.length > 0 && !ALLOWED_ADMIN_EMAILS.includes(p.email)) return toast(`Access denied: ${p.email}`, 'error');
+  state.user = { email: p.email, name: p.name, picture: p.picture };
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(state.user));
+  unlockApp();
+}
+function unlockApp() {
+  $('lock-screen').classList.add('hidden');
+  $('app-root').style.display = 'flex';
+  if (state.user?.picture) { $('user-avatar').src = state.user.picture; $('user-avatar').style.display = 'block'; }
+  initApp();
+}
+function lockApp() { state.user = null; sessionStorage.removeItem(SESSION_KEY); $('lock-screen').classList.remove('hidden'); $('app-root').style.display = 'none'; }
+function checkAuthSession() {
+  const saved = sessionStorage.getItem(SESSION_KEY);
+  if (saved) { try { state.user = JSON.parse(saved); unlockApp(); return true; } catch (e) {} }
+  return false;
+}
+function initGoogleAuth() {
+  if (checkAuthSession()) return;
+  if (!window.google?.accounts?.id) return setTimeout(initGoogleAuth, 100);
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
+  google.accounts.id.renderButton($('google-btn-container'), { theme: 'outline', size: 'large', text: 'signin_with' });
+}
+
+/* ==================== SAFE MODE LOGIC ==================== */
+function updateSafeModeUI() {
+  const toggle = $('safe-mode-toggle'), sw = $('safe-mode-switch');
+  if (state.safeMode) { toggle.className = 'safe-mode-toggle on'; sw.className = 'toggle-switch on'; }
+  else { toggle.className = 'safe-mode-toggle off'; sw.className = 'toggle-switch off'; }
+  localStorage.setItem(SAFE_MODE_KEY, state.safeMode);
+}
+function toggleSafeMode() {
+  state.safeMode = !state.safeMode;
+  updateSafeModeUI();
+  toast(`Safe Mode ${state.safeMode ? 'ENABLED 🛡️' : 'DISABLED ⚠️'}`, state.safeMode ? 'info' : 'error');
+  if (state.db.currentTable) renderGrid();
+}
+
+/* ==================== API CLIENT ==================== */
+const dbApi = async (endpoint, payload = {}) => {
+  const acc = getActive(); if (!acc) throw new Error('No active account');
+  const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ creds: acc.db, ...payload }) });
+  const j = await res.json(); if (!j.success) throw new Error(j.error); return j.data;
+};
+const smmApi = async (action, params = {}) => {
+  const acc = getActive(); if (!acc) throw new Error('No active account');
+  const res = await fetch('/api/proxy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: acc.api.endpoint, payload: { key: acc.api.key, action, ...params } }) });
+  const j = await res.json(); if (!j.success) throw new Error(j.error); return j.data;
+};
+
+/* ==================== MODALS ==================== */
+let pendingCellEdit = null, cellEditKeyHandler = null;
+function openModal(title, bodyHTML, footerButtons = []) {
+  $('modal-title').textContent = title; $('modal-body').innerHTML = bodyHTML;
+  const f = $('modal-footer'); f.innerHTML = '';
+  footerButtons.forEach(({ label, className, onClick }) => {
+    const b = document.createElement('button'); b.className = `btn ${className || 'btn-secondary'}`; b.textContent = label;
+    b.onclick = () => onClick?.(b); f.appendChild(b);
+  });
+  $('modal-root').classList.add('open');
+}
+function closeModal() {
+  $('modal-root').classList.remove('open');
+  if (pendingCellEdit) { const p = pendingCellEdit; pendingCellEdit = null; detachCellEditKeys(); renderCell(p.td, p.column, p.row); }
+}
+const detachCellEditKeys = () => { if (cellEditKeyHandler) { document.removeEventListener('keydown', cellEditKeyHandler); cellEditKeyHandler = null; } };
+
+/* ==================== FEATURE 3: CELL UPDATE CONFIRMATION ==================== */
+function requestCellUpdate(td, column, row, pkColumn, pkValue, oldValue, newValue) {
+  pendingCellEdit = { td, column, row, pkColumn, pkValue, oldValue, newValue };
+  openModal('Confirm Database Update', `
+    <div class="confirm-meta">
+      <div>Target: Table <strong>${escapeHtml(state.db.currentTable)}</strong> &nbsp;|&nbsp; Primary Key (<strong>${escapeHtml(pkColumn)}</strong>): <strong>${escapeHtml(fmtVal(pkValue))}</strong></div>
+      <div>Field: Column <strong>${escapeHtml(column)}</strong></div>
+    </div>
+    <div class="diff-row">
+      <div class="diff-old">Old Value:<br><span class="badge-old">${escapeHtml(fmtVal(oldValue))}</span></div>
+      <div class="diff-new">New Value:<br><span class="badge-new">${escapeHtml(newValue === '' ? '(empty → NULL)' : newValue)}</span></div>
+    </div>
+    <p class="kbd-hint">⏎ Enter = Confirm Update &nbsp;•&nbsp; Esc = Cancel</p>`,
+    [
+      { label: 'Cancel', onClick: cancelCellUpdate },
+      { label: 'Confirm Update', className: 'btn-primary', onClick: confirmCellUpdate }
+    ]);
+  cellEditKeyHandler = (e) => {
+    if (!pendingCellEdit) return;
+    if (e.key === 'Enter') { e.preventDefault(); confirmCellUpdate(); }
+    else if (e.key === 'Escape') { e.preventDefault(); cancelCellUpdate(); }
+  };
+  document.addEventListener('keydown', cellEditKeyHandler);
+}
+function cancelCellUpdate() { closeModal(); }
+async function confirmCellUpdate() {
+  const p = pendingCellEdit; if (!p) return;
+  pendingCellEdit = null; detachCellEditKeys(); $('modal-root').classList.remove('open');
+  const { td, column, row, pkColumn, pkValue, oldValue, newValue } = p;
+  const finalValue = newValue === '' ? null : newValue;
+  row[column] = finalValue;
+  renderCell(td, column, row);
+  try {
+    await dbApi('/api/db/update', { table: state.db.currentTable, values: { [column]: finalValue }, pkColumn, pkValue });
+    td.classList.add('flash-success'); setTimeout(() => td.classList.remove('flash-success'), 1000);
+    toast(`Updated ${column} successfully`, 'success');
+    await loadTableData();
+  } catch (err) {
+    row[column] = oldValue; renderCell(td, column, row);
+    td.classList.add('flash-error'); setTimeout(() => td.classList.remove('flash-error'), 1000);
+    toast(`Error: ${err.message}`, 'error');
+  }
+}
+
+/* ==================== ACCOUNTS ==================== */
+function renderProfileBar() {
+  $('account-select').innerHTML = state.accounts.map(a => `<option value="${a.id}" ${a.id === state.activeAccountId ? 'selected' : ''}>${escapeHtml(a.name)}</option>`).join('');
+  $('api-active-account').textContent = `Using: ${getActive()?.name || 'None'}`;
+}
+function openAccountForm(account = null) {
+  const isEdit = !!account;
+  openModal(isEdit ? 'Edit Account' : 'Add Account', `
+    <div class="form-group"><label>Account Name</label><input type="text" id="f-name" value="${escapeHtml(account?.name || '')}"></div>
+    <div class="section-divider"><h4>🌐 SMM API</h4></div>
+    <div class="form-grid">
+      <div class="form-group" style="grid-column:1/-1;"><label>Endpoint</label><input type="text" id="f-api-url" value="${escapeHtml(account?.api?.endpoint || DEFAULTS.api.endpoint)}"></div>
+      <div class="form-group" style="grid-column:1/-1;"><label>Key</label><input type="text" id="f-api-key" value="${escapeHtml(account?.api?.key || '')}"></div>
+    </div>
+    <div class="section-divider"><h4>🗄️ MySQL DB</h4></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Host</label><input type="text" id="f-db-host" value="${escapeHtml(account?.db?.host || '')}"></div>
+      <div class="form-group"><label>Port</label><input type="text" id="f-db-port" value="${escapeHtml(account?.db?.port || '')}"></div>
+      <div class="form-group"><label>User</label><input type="text" id="f-db-user" value="${escapeHtml(account?.db?.user || '')}"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="f-db-pass" value="${escapeHtml(account?.db?.password || '')}"></div>
+      <div class="form-group" style="grid-column:1/-1;"><label>Database</label><input type="text" id="f-db-name" value="${escapeHtml(account?.db?.database || '')}"></div>
+    </div>`,
+    [
+      { label: 'Cancel', onClick: closeModal },
+      { label: 'Save', className: 'btn-primary', onClick: () => {
+        const name = $('f-name').value.trim(); if (!name) return toast('Name required', 'error');
+        const data = { name, api: { endpoint: $('f-api-url').value.trim(), key: $('f-api-key').value.trim() },
+          db: { host: $('f-db-host').value.trim(), port: $('f-db-port').value.trim(), user: $('f-db-user').value.trim(), password: $('f-db-pass').value, database: $('f-db-name').value.trim() } };
+        if (isEdit) Object.assign(account, data);
+        else { const n = { id: 'acc_' + Date.now(), ...data }; state.accounts.push(n); state.activeAccountId = n.id; }
+        saveAccounts(); renderProfileBar(); closeModal(); initAfterProfileChange();
+        toast(isEdit ? 'Account updated' : 'Account added', 'success');
+      }}
+    ]);
+}
+function openAccountManager() {
+  openModal('Manage Accounts', `<div class="account-list" id="manager-list">${state.accounts.map(a => `
+    <div class="account-card ${a.id === state.activeAccountId ? 'active' : ''}">
+      <div style="flex:1;min-width:150px;"><div class="name">${escapeHtml(a.name)}</div><div class="meta">${escapeHtml(a.db.host || '')}</div></div>
+      <div style="display:flex;gap:.25rem;flex-wrap:wrap;">
+        <button class="btn btn-secondary btn-sm" data-act="use" data-id="${a.id}">Use</button>
+        <button class="btn btn-secondary btn-sm" data-act="edit" data-id="${a.id}">Edit</button>
+        <button class="btn btn-danger btn-sm" data-act="delete" data-id="${a.id}">Delete</button>
+      </div></div>`).join('')}</div>`,
+    [ { label: 'Close', onClick: closeModal }, { label: '➕ Add New', className: 'btn-primary', onClick: () => { closeModal(); setTimeout(() => openAccountForm(), 100); } } ]);
+  $('manager-list').addEventListener('click', (e) => {
+    const btn = e.target.closest('button'); if (!btn) return;
+    const id = btn.dataset.id, act = btn.dataset.act, acc = state.accounts.find(a => a.id === id);
+    if (act === 'use') { state.activeAccountId = id; saveAccounts(); renderProfileBar(); closeModal(); initAfterProfileChange(); toast(`Switched to ${acc.name}`, 'success'); }
+    else if (act === 'edit') { closeModal(); setTimeout(() => openAccountForm(acc), 100); }
+    else if (act === 'delete') {
+      if (state.accounts.length === 1) return toast('Cannot delete last account', 'error');
+      if (!confirm(`Delete "${acc.name}"?`)) return;
+      state.accounts = state.accounts.filter(a => a.id !== id);
+      if (state.activeAccountId === id) state.activeAccountId = state.accounts[0].id;
+      saveAccounts(); renderProfileBar(); openAccountManager(); initAfterProfileChange(); toast('Account deleted', 'success');
+    }
+  });
+}
+
+/* ==================== UNIFIED REACTIVE PIPELINE ==================== */
+const OMNI_DEBOUNCE = 150;
+let omniTimer = 0;
+
+const normTerm = (t) => String(t ?? '').toLowerCase().trim();
+
+function runTablePipeline() {
+  const db = state.db;
+  
+  // Step 1: Filter from IMMUTABLE master data
+  let processed = [...db.rawTableData];
+  
+  const q = normTerm(db.activeSearchQuery || db.clientTerm);
+  if (q !== '') {
+    processed = processed.filter(row => {
+      return Object.values(row).some(val => 
+        String(val ?? '').toLowerCase().includes(q)
+      );
+    });
+  }
+
+  // Step 2: Sort (if active)
+  if (db.currentSortColumn) {
+    processed.sort((a, b) => {
+      let valA = a[db.currentSortColumn] ?? '';
+      let valB = b[db.currentSortColumn] ?? '';
+
+      // Numeric comparison if both are numbers
+      const numA = Number(valA);
+      const numB = Number(valB);
+      if (!isNaN(numA) && !isNaN(numB) && valA !== '' && valB !== '') {
+        return db.currentSortDirection === 'asc' ? numA - numB : numB - numA;
+      }
+
+      // String comparison
+      return db.currentSortDirection === 'asc' 
+        ? String(valA).localeCompare(String(valB)) 
+        : String(valB).localeCompare(String(valA));
+    });
+  }
+
+  // Step 3: Update match badge
+  renderDbBadge(processed.length, db.rawTableData.length);
+
+  // Step 4: Paginate
+  const totalRows = processed.length;
+  const startIndex = (db.currentPage - 1) * db.pageSize;
+  const paginatedRows = processed.slice(startIndex, startIndex + db.pageSize);
+
+  // Step 5: Render DOM
+  renderGrid(paginatedRows);
+  renderPagination(totalRows);
+}
+
+function renderDbBadge(matchCount, totalCount) {
+  const badge = $('db-match-badge');
+  if (!badge) return;
+  
+  if ((state.db.activeSearchQuery || state.db.clientTerm || '').trim()) {
+    badge.textContent = `Showing ${matchCount} of ${totalCount} rows`;
+    badge.className = matchCount === 0 ? 'db-match-badge zero' : 'db-match-badge';
+  } else if (state.db.omni) {
+    badge.textContent = `Showing ${totalCount} of ${state.db.totalCount} rows (full-table)`;
+    badge.className = 'db-match-badge deep';
+  } else {
+    badge.textContent = `Showing ${totalCount} of ${state.db.totalCount} rows`;
+    badge.className = 'db-match-badge';
+  }
+}
+
+function renderPagination(totalRows) {
+  const db = state.db;
+  const totalPages = Math.max(1, Math.ceil(totalRows / db.pageSize));
+  
+  if (db.currentPage > totalPages) {
+    db.currentPage = totalPages;
+  }
+  
+  $('page-info').textContent = `Page ${db.currentPage} of ${totalPages} (${totalRows} total)`;
+  $('btn-prev').disabled = db.currentPage <= 1;
+  $('btn-next').disabled = db.currentPage >= totalPages;
+}
+
+function highlight(text, term) {
+  const esc = escapeHtml(text);
+  if (!term) return esc;
+  const pattern = escapeHtml(term).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return esc.replace(new RegExp(pattern, 'gi'), m => `<mark class="search-match">${m}</mark>`);
+}
+
+function onOmniInput(e) {
+  state.db.activeSearchQuery = e.target.value;
+  state.db.clientTerm = e.target.value;
+  state.db.currentPage = 1;
+  $('omni-clear')?.classList.toggle('show', e.target.value.length > 0);
+  runTablePipeline();
+}
+
+async function onOmniKeydown(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const term = e.target.value.trim();
+    if (!term) return clearOmni();
+    
+    state.db.omni = term;
+    state.db.activeSearchQuery = term;
+    state.db.clientTerm = term;
+    state.db.currentPage = 1;
+    
+    showPreloader();
+    try {
+      const result = await dbApi('/api/db/select', {
+        table: state.db.currentTable,
+        omni: term,
+        sort: state.db.currentSortColumn ? { 
+          column: state.db.currentSortColumn, 
+          dir: state.db.currentSortDirection.toUpperCase() 
+        } : null,
+        limit: 1000,
+        offset: 0
+      });
+      
+      state.db.rawTableData = [...result.rows];
+      state.db.totalCount = result.total;
+      $('row-count').textContent = `(${result.total} rows)`;
+      
+      runTablePipeline();
+      toast(`Deep search: ${result.total} match(es)`, 'success');
+    } catch (err) {
+      toast('Deep search failed: ' + err.message, 'error');
+    } finally {
+      hidePreloader();
+    }
+  } else if (e.key === 'Escape') {
+    clearOmni();
+  }
+}
+
+function clearOmni() {
+  const omniInput = $('omni-input');
+  if (omniInput) omniInput.value = '';
+  state.db.activeSearchQuery = '';
+  state.db.clientTerm = '';
+  state.db.omni = '';
+  state.db.currentPage = 1;
+  $('omni-clear')?.classList.remove('show');
+  
+  loadTableData();
+  omniInput?.focus();
+}
+
+function onSortHeaderClick(columnName) {
+  const db = state.db;
+  if (db.currentSortColumn === columnName) {
+    db.currentSortDirection = db.currentSortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    db.currentSortColumn = columnName;
+    db.currentSortDirection = 'asc';
+  }
+  db.currentPage = 1;
+  runTablePipeline();
+}
+
+/* ==================== DB EXPLORER ==================== */
+async function loadTables() {
+  $('table-list').innerHTML = '<div class="empty"><p>Loading...</p></div>';
+  try {
+    const data = await dbApi('/api/db/tables');
+    state.db.tables = data.map(r => Object.values(r)[0]);
+    $('table-list').innerHTML = state.db.tables.map(t => `<div class="table-item ${state.db.currentTable === t ? 'active' : ''}" data-table="${escapeHtml(t)}">${escapeHtml(t)}</div>`).join('');
+    document.querySelectorAll('.table-item').forEach(el => el.addEventListener('click', () => selectTable(el.dataset.table)));
+  } catch (err) { $('table-list').innerHTML = `<div class="empty"><h3>Connection Failed</h3><p>${escapeHtml(err.message)}</p></div>`; }
+}
+
+async function selectTable(table) {
+  state.db.currentTable = table;
+  state.db.activeSearchQuery = '';
+  state.db.clientTerm = '';
+  state.db.omni = '';
+  state.db.currentSortColumn = null;
+  state.db.currentSortDirection = 'asc';
+  state.db.currentPage = 1;
+  state.db.rawTableData = [];
+  
+  const omniInput = $('omni-input');
+  if (omniInput) {
+    omniInput.value = '';
+    $('omni-clear')?.classList.remove('show');
+  }
+  
+  $('current-table-name').textContent = table;
+  document.querySelectorAll('.table-item').forEach(el => 
+    el.classList.toggle('active', el.dataset.table === table)
+  );
+  closeTableDrawer();
+  
+  showPreloader();
+  try {
+    const schema = await dbApi('/api/db/schema', { table });
+    state.db.schema = schema;
+    state.db.pkColumn = schema.find(c => c.Key === 'PRI')?.Field || schema[0]?.Field;
+    state.db.protectedCols = schema.filter(c => 
+      c.Key === 'PRI' || 
+      c.Field === 'id' || 
+      /created_at|updated_at|timestamp/.test(c.Field)
+    ).map(c => c.Field);
+    
+    await loadTableData();
+    toast(`Loaded ${table}`, 'success');
+  } catch (err) {
+    toast('Error: ' + err.message, 'error');
+  } finally {
+    hidePreloader();
+  }
+}
+
+async function loadTableData() {
+  const db = state.db;
+  if (!db.currentTable) return;
+  
+  showPreloader();
+  try {
+    const result = await dbApi('/api/db/select', {
+      table: db.currentTable,
+      omni: db.omni || undefined,
+      sort: db.currentSortColumn ? { column: db.currentSortColumn, dir: db.currentSortDirection.toUpperCase() } : null,
+      limit: 1000,
+      offset: 0
+    });
+    
+    db.rawTableData = [...result.rows];
+    db.totalCount = result.total;
+    $('row-count').textContent = `(${result.total} rows)`;
+    
+    runTablePipeline();
+  } catch (err) {
+    toast('Query error: ' + err.message, 'error');
+  } finally {
+    hidePreloader();
+  }
+}
+const loadData = loadTableData;
+
+function renderCell(td, column, row) {
+  const v = row[column];
+  const term = normTerm(state.db.activeSearchQuery || state.db.clientTerm);
+  if (v === null || v === undefined) td.innerHTML = '<span class="null-val">NULL</span>';
+  else if (typeof v === 'object') td.innerHTML = highlight(JSON.stringify(v), term);
+  else td.innerHTML = highlight(String(v), term);
+}
+
+function renderGrid(dataToRender = null) {
+  const wrap = $('grid-wrap');
+  const loader = $('db-preloader');
+  const db = state.db;
+  
+  wrap.innerHTML = '';
+  wrap.appendChild(loader);
+  
+  if (!db.currentTable) {
+    wrap.insertAdjacentHTML('beforeend', 
+      '<div class="empty"><h3>No table selected</h3><p>Choose a table from the sidebar.</p></div>');
+    return;
+  }
+  
+  const rows = dataToRender !== null ? dataToRender : db.rawTableData;
+  
+  if (!rows.length) {
+    wrap.insertAdjacentHTML('beforeend', (db.activeSearchQuery || db.omni)
+      ? `<div class="empty"><h3>No records match</h3><p>No row in this table contains "${escapeHtml(db.activeSearchQuery || db.omni)}".</p></div>`
+      : '<div class="empty"><h3>No records</h3><p>This table is empty.</p></div>');
+    return;
+  }
+  
+  const cols = db.schema.map(c => c.Field);
+  const pk = db.pkColumn;
+  
+  const table = document.createElement('table');
+  table.className = 'grid';
+  
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  cols.forEach(c => {
+    const th = document.createElement('th');
+    const isSorted = db.currentSortColumn === c;
+    th.className = `sortable ${isSorted ? 'sorted' : ''}`;
+    th.dataset.col = c;
+    
+    let indicator = '⇅';
+    if (isSorted) {
+      indicator = db.currentSortDirection === 'asc' ? '▲' : '▼';
+    }
+    
+    th.innerHTML = `${escapeHtml(c)} <span class="sort-ind">${indicator}</span>`;
+    th.addEventListener('click', () => onSortHeaderClick(c));
+    headRow.appendChild(th);
+  });
+  
+  headRow.insertAdjacentHTML('beforeend', '<th style="width:130px;">Actions</th>');
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+  
+  const tbody = document.createElement('tbody');
+  rows.forEach(row => {
+    const tr = document.createElement('tr');
+    cols.forEach(c => {
+      const td = document.createElement('td');
+      const isProtected = state.safeMode && db.protectedCols.includes(c);
+      
+      if (c === pk) td.classList.add('pk-cell');
+      else if (isProtected) td.classList.add('readonly-cell');
+      
+      renderCell(td, c, row);
+      
+      if (c !== pk && !isProtected) {
+        td.addEventListener('click', () => 
+          enableInlineEdit(td, c, row, pk, row[pk])
+        );
+      }
+      
+      tr.appendChild(td);
+    });
+    
+    const orderIdCol = cols.find(c => 
+      ['order_id', 'api_order_id', 'external_id', 'order'].includes(c.toLowerCase())
+    );
+    const orderId = orderIdCol ? row[orderIdCol] : null;
+    
+    let actionsHtml = '<button class="btn btn-danger btn-sm btn-del">🗑️</button>';
+    if (orderId) {
+      actionsHtml += ` <button class="btn btn-secondary btn-sm btn-sync" data-oid="${escapeHtml(orderId)}">⚡ Sync</button>`;
+    }
+    
+    tr.insertAdjacentHTML('beforeend', `<td class="actions">${actionsHtml}</td>`);
+    tr.querySelector('.btn-del').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openDeleteConfirm(row[pk]);
+    });
+    
+    const syncBtn = tr.querySelector('.btn-sync');
+    if (syncBtn) {
+      syncBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        syncOrderStatus(syncBtn.dataset.oid, row, pk, row[pk]);
+      });
+    }
+    
+    tbody.appendChild(tr);
+  });
+  
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+}
+function enableInlineEdit(td, column, row, pkColumn, pkValue) {
+  if (td.querySelector('input.inline-edit-input') || state.db.loading) return;
+  const originalValue = row[column];
+  const displayValue = originalValue === null || originalValue === undefined ? '' : String(originalValue);
+
+  td.classList.add('editing');
+  td.innerHTML = '';
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'inline-edit-input';
+  input.value = displayValue;
+  td.appendChild(input);
+  input.focus();
+  input.select();
+
+  let finished = false;
+  let keydownTriggered = false;
+
+  const finish = async (save) => {
+    if (finished) return;
+    finished = true;
+
+    const newValue = input.value;
+    renderCell(td, column, row);
+
+    if (!save || newValue === displayValue) return;
+    requestCellUpdate(td, column, row, pkColumn, pkValue, originalValue, newValue);
+  };
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      keydownTriggered = true;
+      finish(true);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      keydownTriggered = true;
+      finish(false);
+    }
+  });
+
+  input.addEventListener('blur', () => {
+    // Only fire if keydown didn't already handle it
+    if (!keydownTriggered) {
+      finish(true);
+    }
+  });
+}
+function renderPagination() {
+  const tp = Math.max(1, Math.ceil(state.db.total / state.db.pageSize));
+  $('page-info').textContent = `Page ${state.db.page} of ${tp} (${state.db.total} total)`;
+  $('btn-prev').disabled = state.db.page <= 1; $('btn-next').disabled = state.db.page >= tp;
+}
+function openInsertModal() {
+  if (!state.db.currentTable) return;
+  openModal(`Insert into ${state.db.currentTable}`, state.db.schema.map(c => {
+    const isAI = c.Extra?.toLowerCase().includes('auto_increment');
+    return `<div class="form-group"><label>${escapeHtml(c.Field)}</label><input type="text" id="ins-${escapeHtml(c.Field)}" ${isAI ? 'disabled' : ''}></div>`;
+  }).join(''), [
+    { label: 'Cancel', onClick: closeModal },
+    { label: 'Insert', className: 'btn-primary', onClick: async (btn) => {
+      const values = {}; state.db.schema.forEach(c => { const i = $(`ins-${c.Field}`); if (i && !i.disabled) values[c.Field] = i.value; });
+      try { btn.disabled = true; const r = await dbApi('/api/db/insert', { table: state.db.currentTable, values }); toast(`Inserted ID: ${r.insertId}`, 'success'); closeModal(); loadData(); }
+      catch (err) { toast('Error: ' + err.message, 'error'); } finally { btn.disabled = false; }
+    }}
+  ]);
+}
+function openDeleteConfirm(pkValue) {
+  if (state.safeMode) {
+    openModal('🛡️ Safe Mode Warning: Confirm Delete', `<p style="color: var(--danger); font-weight: 600;">Safe Mode is ACTIVE!</p><p style="margin-top:0.5rem;">Are you sure you want to permanently delete row where <strong>${escapeHtml(state.db.pkColumn)} = ${escapeHtml(fmtVal(pkValue))}</strong>?</p>`, [
+      { label: 'Cancel', onClick: closeModal },
+      { label: 'Confirm Delete', className: 'btn-danger', onClick: async (btn) => {
+        try { btn.disabled = true; await dbApi('/api/db/delete', { table: state.db.currentTable, pkColumn: state.db.pkColumn, pkValue }); toast('Deleted', 'success'); closeModal(); loadData(); }
+        catch (err) { toast('Error: ' + err.message, 'error'); } finally { btn.disabled = false; }
+      }}
+    ]);
+  } else {
+    openModal('Confirm Delete', `<p>Delete row where <strong>${escapeHtml(state.db.pkColumn)} = ${escapeHtml(fmtVal(pkValue))}</strong>?</p>`, [
+      { label: 'Cancel', onClick: closeModal },
+      { label: 'Delete', className: 'btn-danger', onClick: async (btn) => {
+        try { btn.disabled = true; await dbApi('/api/db/delete', { table: state.db.currentTable, pkColumn: state.db.pkColumn, pkValue }); toast('Deleted', 'success'); closeModal(); loadData(); }
+        catch (err) { toast('Error: ' + err.message, 'error'); } finally { btn.disabled = false; }
+      }}
+    ]);
+  }
+}
+async function syncOrderStatus(orderId, row, pkColumn, pkValue) {
+  try {
+    toast(`Syncing order #${orderId}...`, 'info');
+    const data = await smmApi('status', { order: orderId });
+    if (data.error) throw new Error(data.error);
+    const updates = {};
+    ['status','remains','charge','start_count'].forEach(k => { if (state.db.schema.some(s => s.Field === k) && data[k] !== undefined) updates[k] = data[k]; });
+    if (Object.keys(updates).length > 0) {
+      Object.assign(row, updates);
+      state.db.rowIdx = buildRowIndex(state.db.rows);
+      await dbApi('/api/db/update', { table: state.db.currentTable, values: updates, pkColumn, pkValue });
+      toast(`Order #${orderId} synced to database!`, 'success'); loadData();
+    } else {
+      openModal(`Sync Status for Order #${orderId}`, `<pre class="raw-viewer">${escapeHtml(JSON.stringify(data, null, 2))}</pre>`, [{ label: 'Close', onClick: closeModal }]);
+    }
+  } catch (err) { toast(`Sync error: ${err.message}`, 'error'); }
+}
+
+/* ==================== EMERGENCY SQL TERMINAL ==================== */
+async function executeRawSql() {
+  const sqlInput = $('sql-input').value.trim();
+  if (!sqlInput) return toast('Enter a SQL query', 'error');
+  if (state.safeMode && /DROP|DELETE|TRUNCATE|UPDATE|ALTER/i.test(sqlInput)) {
+    if (!confirm('🛡️ Safe Mode Warning: Dangerous operation. Proceed?')) return;
+  }
+  const btn = $('btn-execute-sql'), timer = $('sql-exec-time'), output = $('sql-output');
+  try {
+    btn.disabled = true; timer.textContent = 'Executing...'; output.style.display = 'none'; output.className = 'sql-output';
+    const data = await dbApi('/api/db/raw', { sql: sqlInput });
+    timer.textContent = `⚡ ${data.execTime || 0}ms`; output.style.display = 'block'; output.classList.add('success');
+    if (data.rows) {
+      if (!data.rows.length) output.innerHTML = '<em>0 rows returned.</em>';
+      else {
+        const cols = Object.keys(data.rows[0]);
+        output.innerHTML = `<div><strong>${data.rowCount} rows:</strong></div><table class="grid"><thead><tr>${cols.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>${data.rows.map(r=>`<tr>${cols.map(c=>`<td>${escapeHtml(fmtVal(r[c]))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+      }
+    } else output.innerHTML = `<strong>Success:</strong> ${data.affectedRows || 0} rows affected`;
+    toast('SQL Executed', 'success');
+  } catch (err) {
+    timer.textContent = 'Failed'; output.style.display = 'block'; output.classList.add('error'); output.textContent = err.message;
+    toast('SQL Error: ' + err.message, 'error');
+  } finally { btn.disabled = false; }
+}
+
+/* ==================== SMM API & VIRTUALIZED SERVICES ==================== */
+const ACTION_CONFIG = {
+  balance: { fields: [] }, services: { fields: [] }, add: { hasServiceType: true, fields: [] },
+  status: { fields: [{ name: 'order', label: 'Order ID', type: 'text', required: true }] },
+  status_multi: { realAction: 'status', fields: [{ name: 'orders', label: 'Order IDs', type: 'text', required: true }] },
+  refill: { fields: [{ name: 'order', label: 'Order ID', type: 'text', required: true }] },
+  refill_multi: { realAction: 'refill', fields: [{ name: 'orders', label: 'Order IDs', type: 'text', required: true }] },
+  refill_status: { realAction: 'refill_status', fields: [{ name: 'refill', label: 'Refill ID', type: 'text', required: true }] },
+  refill_status_multi: { realAction: 'refill_status', fields: [{ name: 'refills', label: 'Refill IDs', type: 'text', required: true }] },
+  cancel: { fields: [{ name: 'orders', label: 'Order IDs', type: 'text', required: true }] }
+};
+const SERVICE_TYPE_FIELDS = {
+  0: [{ name: 'service', label: 'Service ID', type: 'text', required: true }, { name: 'link', label: 'Link', type: 'text', required: true }, { name: 'quantity', label: 'Quantity', type: 'number', required: true }, { name: 'runs', label: 'Runs (opt)', type: 'number' }, { name: 'interval', label: 'Interval (opt)', type: 'number' }],
+  10: [{ name: 'service', label: 'Service ID', type: 'text', required: true }, { name: 'link', label: 'Link', type: 'text', required: true }],
+  1: [{ name: 'service', label: 'Service ID', type: 'text', required: true }, { name: 'link', label: 'Link', type: 'text', required: true }, { name: 'quantity', label: 'Quantity', type: 'number', required: true }, { name: 'keywords', label: 'Keywords', type: 'textarea', required: true }],
+  2: [{ name: 'service', label: 'Service ID', type: 'text', required: true }, { name: 'link', label: 'Link', type: 'text', required: true }, { name: 'comments', label: 'Comments', type: 'textarea', required: true }],
+  3: [{ name: 'service', label: 'Service ID', type: 'text', required: true }, { name: 'link', label: 'Link', type: 'text', required: true }, { name: 'quantity', label: 'Quantity', type: 'number', required: true }, { name: 'usernames', label: 'Usernames', type: 'textarea', required: true }, { name: 'hashtags', label: 'Hashtags', type: 'textarea', required: true }],
+  7: [{ name: 'service', label: 'Service ID', type: 'text', required: true }, { name: 'link', label: 'Link', type: 'text', required: true }, { name: 'quantity', label: 'Quantity', type: 'number', required: true }, { name: 'username', label: 'URL to scrape', type: 'text', required: true }],
+  100: [{ name: 'service', label: 'Service ID', type: 'text', required: true }, { name: 'username', label: 'Username', type: 'text', required: true }, { name: 'min', label: 'Min', type: 'number', required: true }, { name: 'max', label: 'Max', type: 'number', required: true }, { name: 'delay', label: 'Delay', type: 'number', required: true }],
+  14: [{ name: 'service', label: 'Service ID', type: 'text', required: true }, { name: 'link', label: 'Link', type: 'text', required: true }, { name: 'comments', label: 'Comments', type: 'textarea', required: true }],
+  15: [{ name: 'service', label: 'Service ID', type: 'text', required: true }, { name: 'link', label: 'Link', type: 'text', required: true }, { name: 'quantity', label: 'Quantity', type: 'number', required: true }, { name: 'username', label: 'Username', type: 'text', required: true }],
+  17: [{ name: 'service', label: 'Service ID', type: 'text', required: true }, { name: 'link', label: 'Link', type: 'text', required: true }, { name: 'quantity', label: 'Quantity', type: 'number', required: true }, { name: 'answer_number', label: 'Answer #', type: 'number', required: true }],
+  20: [{ name: 'service', label: 'Service ID', type: 'text', required: true }, { name: 'link', label: 'Link', type: 'text', required: true }, { name: 'quantity', label: 'Quantity', type: 'number', required: true }, { name: 'groups', label: 'Groups', type: 'textarea', required: true }]
+};
+
+/* FEATURE 1: CHARGE CALCULATOR & MIN/MAX VALIDATION */
+function recalcCharge() {
+  const badge = $('charge-badge'), warn = $('qty-warning'); if (!badge) return;
+  let q = 0;
+  const qEl = $('smm-field-quantity');
+  const cEl = $('smm-field-comments') || $('smm-field-usernames');
+  if (qEl && qEl.value) q = parseFloat(qEl.value) || 0;
+  else if (cEl && cEl.value) q = cEl.value.split('\n').filter(l => l.trim()).length;
+
+  if (orderMeta.rate !== null && q > 0) {
+    const charge = (orderMeta.rate / 1000) * q;
+    badge.className = 'charge-badge';
+    badge.innerHTML = `⚡ Estimated Charge: <strong>$${charge.toFixed(4)}</strong> <span style="font-weight:400;opacity:.85;">($${orderMeta.rate}/1k)</span>`;
+  } else {
+    badge.className = 'charge-badge muted';
+    badge.innerHTML = orderMeta.rate !== null ? `⚡ Rate: $${orderMeta.rate}/1k (enter quantity for charge)` : '⚡ Select a service or enter quantity for charge estimate';
+  }
+
+  if (warn && orderMeta.min !== null && orderMeta.max !== null && q > 0) {
+    if (q < orderMeta.min || q > orderMeta.max) {
+      warn.classList.add('show');
+      warn.textContent = `⚠️ Quantity must be between ${orderMeta.min} and ${orderMeta.max}`;
+    } else warn.classList.remove('show');
+  } else if (warn) warn.classList.remove('show');
+}
+
+function renderSmmForm() {
+  const action = state.smm.action, config = ACTION_CONFIG[action], area = $('smm-form-area');
+  let html = '';
+  if (action === 'add') {
+    html += `
+      <div class="charge-badge muted" id="charge-badge">⚡ Select a service or enter quantity for charge estimate</div>
+      <div class="qty-warning" id="qty-warning"></div>
+      <div class="service-type-note"><strong>Dynamic Form:</strong> Select service type to display required fields.</div>
+      <div class="form-group"><label>Service Type</label>
+        <select id="smm-service-type">${Object.keys(SERVICE_TYPE_FIELDS).map(t => `<option value="${t}" ${t === state.smm.serviceType ? 'selected' : ''}>${escapeHtml(SERVICE_TYPE_LABELS[t] || `Type ${t}`)}</option>`).join('')}</select>
+      </div>
+      <div id="service-type-fields" class="api-form-grid"></div>`;
+  } else if (config.fields.length > 0) {
+    html += '<div class="api-form-grid">' + config.fields.map(f => `<div class="form-group"><label>${escapeHtml(f.label)}</label><input type="${f.type}" id="smm-field-${f.name}"></div>`).join('') + '</div>';
+  } else {
+    html += `<p style="color:var(--muted);font-size:.875rem;">${action === 'services' ? 'Services are virtualized & cached via SWR.' : 'No parameters required.'}</p>`;
+  }
+  area.innerHTML = html;
+  if (action === 'add') {
+    renderServiceTypeFields();
+    $('smm-service-type').addEventListener('change', (e) => { state.smm.serviceType = e.target.value; renderServiceTypeFields(); });
+  }
+}
+
+function renderServiceTypeFields() {
+  const fields = SERVICE_TYPE_FIELDS[state.smm.serviceType] || [];
+  $('service-type-fields').innerHTML = fields.map(f => `<div class="form-group ${f.type === 'textarea' ? 'full' : ''}"><label>${escapeHtml(f.label)}</label>${f.type === 'textarea' ? `<textarea id="smm-field-${f.name}"></textarea>` : `<input type="${f.type}" id="smm-field-${f.name}">`}</div>`).join('');
+
+  // Attach live charge listeners
+  ['smm-field-quantity','smm-field-comments','smm-field-usernames'].forEach(id => {
+    $(id)?.addEventListener('input', recalcCharge);
+  });
+  $('smm-field-service')?.addEventListener('change', (e) => {
+    const sId = e.target.value.trim();
+    const match = state.smm.servicesData.find(s => String(s.service) === sId);
+    if (match) {
+      orderMeta.rate = parseFloat(match.rate) || 0;
+      orderMeta.min = parseInt(match.min) || 0;
+      orderMeta.max = parseInt(match.max) || 0;
+      orderMeta.name = match.name || '';
+    } else { orderMeta.rate = null; orderMeta.min = null; orderMeta.max = null; orderMeta.name = ''; }
+    recalcCharge();
+  });
+  recalcCharge();
+}
+
+/* ==================== VIRTUALIZED SERVICES ENGINE ==================== */
+const SV = { ROW_H: 40, OVERSCAN: 6, data: [], searchIdx: [], numKeys: null, strKeys: null, view: [], start: -1, end: -1, raf: 0, searchTimer: 0 };
+const SV_COLS = ['service', 'name', 'category', 'type', 'rate', 'min', 'max', 'refill', 'cancel', 'action'];
+const SV_SORTABLE = new Set(['service', 'name', 'category', 'rate', 'min', 'max']);
+const SV_NUMERIC = new Set(['service', 'rate', 'min', 'max']);
+const SV_LABELS = { service: 'ID', name: 'Name', category: 'Category', type: 'Type', rate: 'Rate', min: 'Min', max: 'Max', refill: 'Refill', cancel: 'Cancel', action: 'Action' };
+
+function updateSyncBadge() { $('swr-sync-badge')?.classList.toggle('hidden', !state.smm.servicesSyncing); }
+const svCell = (v) => v === null || v === undefined ? '<span class="null-val">-</span>' : (v === true ? '✅' : (v === false ? '❌' : escapeHtml(String(v))));
+
+function svBuildIndex(data) {
+  const n = data.length, searchIdx = new Array(n);
+  const num = { service: new Float64Array(n), rate: new Float64Array(n), min: new Float64Array(n), max: new Float64Array(n) };
+  const str = { name: new Array(n), category: new Array(n) };
+  for (let i = 0; i < n; i++) {
+    const r = data[i];
+    searchIdx[i] = (r.service+' '+r.name+' '+r.category+' '+r.type+' '+r.rate+' '+r.min+' '+r.max).toLowerCase();
+    num.service[i] = parseFloat(r.service) || 0; num.rate[i] = parseFloat(r.rate) || 0;
+    num.min[i] = parseFloat(r.min) || 0; num.max[i] = parseFloat(r.max) || 0;
+    str.name[i] = String(r.name ?? '').toLowerCase(); str.category[i] = String(r.category ?? '').toLowerCase();
+  }
+  SV.searchIdx = searchIdx; SV.numKeys = num; SV.strKeys = str;
+}
+function svSetData(rows) { state.smm.servicesData = rows; SV.data = rows; svBuildIndex(rows); SV.start = SV.end = -1; renderServicesUI(); }
+
+function svRecompute() {
+  const q = (state.smm.servicesSearch || '').trim().toLowerCase(), n = SV.data.length, idx = [];
+  if (!q) { for (let i = 0; i < n; i++) idx.push(i); }
+  else { const s = SV.searchIdx; for (let i = 0; i < n; i++) if (s[i].includes(q)) idx.push(i); }
+  const { column, dir } = state.smm.servicesSort;
+  if (column && dir) {
+    const mul = dir === 'ASC' ? 1 : -1;
+    if (SV_NUMERIC.has(column)) { const arr = SV.numKeys[column]; idx.sort((a,b) => (arr[a]-arr[b])*mul || a-b); }
+    else { const arr = SV.strKeys[column]; idx.sort((a,b) => (arr[a]<arr[b]?-1:(arr[a]>arr[b]?1:0))*mul || a-b); }
+  }
+  SV.view = idx;
+  if ($('services-match-count')) $('services-match-count').textContent = `Matching: ${idx.length} / ${n}`;
+  svRenderWindow(true);
+}
+function svRenderWindow(force) {
+  const scroller = $('sv-wrap'); if (!scroller) return;
+  const total = SV.view.length; $('sv-spacer').style.height = (total * SV.ROW_H) + 'px';
+  const vh = scroller.clientHeight, st = scroller.scrollTop;
+  let start = Math.max(0, Math.floor(st / SV.ROW_H) - SV.OVERSCAN);
+  let end = Math.min(total, Math.ceil((st + vh) / SV.ROW_H) + SV.OVERSCAN);
+  if (!force && start === SV.start && end === SV.end) return;
+  SV.start = start; SV.end = end;
+  const parts = new Array(end - start);
+  for (let k = start; k < end; k++) {
+    const r = SV.data[SV.view[k]];
+    parts[k - start] = `<div class="sv-row">
+      <div class="sv-cell">${svCell(r.service)}</div>
+      <div class="sv-cell" title="${escapeHtml(String(r.name ?? ''))}">${svCell(r.name)}</div>
+      <div class="sv-cell" title="${escapeHtml(String(r.category ?? ''))}">${svCell(r.category)}</div>
+      <div class="sv-cell">${svCell(r.type)}</div>
+      <div class="sv-cell">${svCell(r.rate)}</div>
+      <div class="sv-cell">${svCell(r.min)}</div>
+      <div class="sv-cell">${svCell(r.max)}</div>
+      <div class="sv-cell">${svCell(r.refill)}</div>
+      <div class="sv-cell">${svCell(r.cancel)}</div>
+      <div class="sv-cell"><button class="order-btn" data-svc="${escapeHtml(String(r.service))}">🛒 Order</button></div>
+    </div>`;
+  }
+  $('sv-window').style.transform = `translateY(${start * SV.ROW_H}px)`;
+  $('sv-window').innerHTML = parts.join('');
+  $('sv-window').querySelectorAll('.order-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => { e.stopPropagation(); clickToOrderService(btn.dataset.svc); });
+  });
+}
+
+/* FEATURE 2: AUTO TYPE-MAPPING ON CLICK-TO-ORDER */
+function clickToOrderService(serviceId) {
+  const r = state.smm.servicesData.find(s => String(s.service) === String(serviceId));
+  if (r) {
+    orderMeta.rate = parseFloat(r.rate) || 0;
+    orderMeta.min = parseInt(r.min) || 0;
+    orderMeta.max = parseInt(r.max) || 0;
+    orderMeta.name = r.name || '';
+    
+    // Auto-map service type
+    let mappedType = "0";
+    if (r.type && SERVICE_TYPE_MAP[r.type]) {
+      mappedType = SERVICE_TYPE_MAP[r.type];
+    } else {
+      const typeStr = (r.type || r.name || '').toLowerCase();
+      if (typeStr.includes('custom comment')) mappedType = "2";
+      else if (typeStr.includes('package')) mappedType = "10";
+      else if (typeStr.includes('seo') || typeStr.includes('keyword')) mappedType = "1";
+      else if (typeStr.includes('subscription')) mappedType = "100";
+      else if (typeStr.includes('poll')) mappedType = "17";
+    }
+    state.smm.serviceType = mappedType;
+  }
+
+  state.smm.action = 'add';
+  $('smm-action').value = 'add';
+  renderSmmForm();
+
+  const serviceInput = $('smm-field-service');
+  if (serviceInput) serviceInput.value = serviceId;
+  recalcCharge();
+
+  // Switch view to API tab
+  const apiTab = document.querySelector('.view-tab[data-view="api"]');
+  if (apiTab) apiTab.click();
+
+  toast(`Selected Service #${serviceId} (${orderMeta.name || 'Order'})`, 'success');
+}
+
+function renderServicesUI() {
+  const container = $('api-results');
+  if (!container.querySelector('.sv-toolbar')) {
+    container.innerHTML = `
+      <div class="sv-toolbar">
+        <input type="text" id="services-search" placeholder="🔍 Search services by ID, name, category..." value="${escapeHtml(state.smm.servicesSearch)}">
+        <span id="services-match-count" class="match-badge"></span>
+        <span id="swr-sync-badge" class="sync-badge ${state.smm.servicesSyncing ? '' : 'hidden'}">⚡ Syncing latest...</span>
+      </div>
+      <div class="sv-wrap" id="sv-wrap">
+        <div class="sv-inner">
+          <div class="sv-head">${SV_COLS.map(c => `<div class="sv-hcell ${SV_SORTABLE.has(c) ? 'sortable' : ''}" data-col="${c}">${SV_LABELS[c]}${SV_SORTABLE.has(c) ? '<span class="sort-ind">⇅</span>' : ''}</div>`).join('')}</div>
+          <div class="sv-spacer" id="sv-spacer"><div class="sv-window" id="sv-window"></div></div>
+        </div>
+      </div>`;
+    $('services-search').addEventListener('input', (e) => {
+      state.smm.servicesSearch = e.target.value;
+      clearTimeout(SV.searchTimer);
+      SV.searchTimer = setTimeout(svRecompute, 120);
+    });
+    document.querySelectorAll('.sv-hcell.sortable').forEach(h => {
+      h.addEventListener('click', () => {
+        const s = state.smm.servicesSort, col = h.dataset.col;
+        if (s.column === col) { s.dir = s.dir === 'ASC' ? 'DESC' : 'ASC'; }
+        else { s.column = col; s.dir = 'ASC'; }
+        svRecompute();
+      });
+    });
+    $('sv-wrap').addEventListener('scroll', () => {
+      if (!SV.raf) SV.raf = requestAnimationFrame(() => { SV.raf = 0; svRenderWindow(false); });
+    }, { passive: true });
+  }
+  svRecompute();
+}
+
+async function handleServicesFetch() {
+  const cacheKey = `swr_services_${state.activeAccountId}`, cached = localStorage.getItem(cacheKey);
+  $('api-raw').style.display = 'none';
+  if (cached) { try { svSetData(JSON.parse(cached)); $('response-status').innerHTML = '<span style="color:var(--muted);">Cached • revalidating…</span>'; } catch (e) {} }
+  else $('api-results').innerHTML = '<div class="empty"><div class="spinner-ring" style="margin:0 auto;"></div><p style="margin-top:1rem;">Fetching services...</p></div>';
+
+  state.smm.servicesSyncing = true; updateSyncBadge();
+  try {
+    const fresh = await smmApi('services', {});
+    if (fresh?.error) throw new Error(fresh.error);
+    if (!Array.isArray(fresh)) throw new Error('Invalid response format');
+    setTimeout(() => { try { localStorage.setItem(cacheKey, JSON.stringify(fresh)); } catch (e) {} }, 0);
+    const prevScroll = $('sv-wrap')?.scrollTop || 0;
+    svSetData(fresh);
+    if ($('sv-wrap')) $('sv-wrap').scrollTop = prevScroll;
+    $('response-status').innerHTML = '<span style="color:var(--success);font-weight:600;">✓ Synchronized</span>';
+    toast('Services synchronized', 'success');
+  } catch (err) {
+    $('response-status').innerHTML = '<span style="color:var(--danger);font-weight:600;">✕ Sync Failed</span>';
+    toast('Error syncing: ' + err.message, 'error');
+  } finally { state.smm.servicesSyncing = false; updateSyncBadge(); }
+}
+
+function renderApiResults(data) {
+  state.smm.lastResponse = data;
+  const container = $('api-results');
+  let rows = Array.isArray(data) ? data : [];
+  if (!Array.isArray(data) && typeof data === 'object' && data !== null) {
+    const keys = Object.keys(data);
+    if (keys.length && keys.every(k => typeof data[k] === 'object' && data[k] !== null)) rows = keys.map(k => ({ _key: k, ...data[k] }));
+    else rows = [data];
+  }
+  if (!rows.length) { container.innerHTML = '<div class="empty"><p>Empty response.</p></div>'; $('api-raw').textContent = JSON.stringify(data, null, 2); return; }
+  const cols = [...new Set(rows.flatMap(r => Object.keys(r)))];
+  container.innerHTML = `<table class="grid"><thead><tr>${cols.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${r[c]===null||r[c]===undefined?'<span class="null-val">NULL</span>':escapeHtml(typeof r[c]==='object'?JSON.stringify(r[c]):String(r[c]))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  $('api-raw').textContent = JSON.stringify(data, null, 2);
+}
+
+async function executeSmmAction(btn) {
+  const action = state.smm.action;
+  if (action === 'services') return handleServicesFetch();
+  const cfg = ACTION_CONFIG[action]; if (!cfg) return;
+  const realAction = cfg.realAction || action, params = {};
+  const fields = cfg.hasServiceType ? (SERVICE_TYPE_FIELDS[state.smm.serviceType] || []) : cfg.fields;
+  for (const f of fields) {
+    const el = $(`smm-field-${f.name}`);
+    if (el) {
+      const val = el.value.trim();
+      if (f.required && !val) { toast(`"${f.label}" is required`, 'error'); el.focus(); return; }
+      if (val !== '') params[f.name] = val;
+    }
+  }
+  try {
+    const orig = btn.textContent; btn.disabled = true; btn.innerHTML = '<span class="spinner-inline"></span> Requesting...';
+    $('response-status').textContent = 'Requesting...'; $('api-raw').style.display = 'none';
+    const data = await smmApi(realAction, params);
+    renderApiResults(data); $('response-status').textContent = 'Success (200 OK)'; toast('Request executed', 'success');
+    btn.disabled = false; btn.textContent = orig;
+  } catch (err) {
+    renderApiResults({ error: err.message }); $('response-status').textContent = 'Failed'; toast('API Error: ' + err.message, 'error');
+    btn.disabled = false; btn.textContent = 'Execute Request';
+  }
+}
+
+/* ==================== FEATURE 4: MOBILE SIDEBAR DRAWER ==================== */
+function openTableDrawer() { $('sidebar')?.classList.add('open'); $('sidebar-backdrop')?.classList.add('show'); }
+function closeTableDrawer() { $('sidebar')?.classList.remove('open'); $('sidebar-backdrop')?.classList.remove('show'); }
+
+/* ==================== LIFECYCLE & EVENT BINDINGS ==================== */
+async function initAfterProfileChange() {
+  state.db = {
+    rawTableData: [],
+    tables: [],
+    currentTable: null,
+    schema: [],
+    activeSearchQuery: '',
+    omni: '',
+    clientTerm: '',
+    currentSortColumn: null,
+    currentSortDirection: 'asc',
+    currentPage: 1,
+    pageSize: state.db?.pageSize || 25,
+    totalCount: 0,
+    pkColumn: null,
+    protectedCols: [],
+    loading: false
+  };
+  const oi = $('omni-input'); if (oi) { oi.value = ''; $('omni-clear')?.classList.remove('show'); }
+  $('current-table-name').textContent = 'Select a table'; $('row-count').textContent = '';
+  $('grid-wrap').innerHTML = '<div class="preloader" id="db-preloader"><div class="spinner-ring"></div></div><div class="empty"><h3>No table selected</h3><p>Choose a table from the sidebar.</p></div>';
+  await loadTables();
+  if (state.smm.action === 'services' && state.activeView === 'api') handleServicesFetch();
+}
+
+function bindEvents() {
+  $('safe-mode-toggle').addEventListener('click', toggleSafeMode);
+  $('btn-logout').addEventListener('click', lockApp);
+  $('sql-drawer-toggle').addEventListener('click', () => {
+    const d = $('sql-drawer'); d.classList.toggle('open');
+    $('sql-drawer-arrow').textContent = d.classList.contains('open') ? '▲' : '▼';
+  });
+  $('btn-execute-sql').addEventListener('click', executeRawSql);
+
+  /* Mobile sidebar toggle */
+  $('btn-mobile-tables')?.addEventListener('click', openTableDrawer);
+  $('sidebar-backdrop')?.addEventListener('click', closeTableDrawer);
+
+  $('account-select').addEventListener('change', (e) => { state.activeAccountId = e.target.value; saveAccounts(); renderProfileBar(); initAfterProfileChange(); toast(`Switched to ${getActive().name}`, 'info'); });
+  $('btn-add-account').addEventListener('click', () => openAccountForm());
+  $('btn-manage-accounts').addEventListener('click', openAccountManager);
+  $('modal-close').addEventListener('click', closeModal);
+  $('modal-root').addEventListener('click', (e) => { if (e.target.id === 'modal-root') closeModal(); });
+
+  document.querySelectorAll('.view-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.view-tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active'); state.activeView = t.dataset.view;
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      $(`view-${t.dataset.view}`).classList.add('active');
+      $('sidebar').style.display = t.dataset.view === 'db' ? 'flex' : 'none';
+      if (t.dataset.view === 'api' && state.smm.action === 'services' && !state.smm.servicesData.length) handleServicesFetch();
+    });
+  });
+
+  $('btn-refresh-tables').addEventListener('click', loadTables);
+  $('btn-refresh-data').addEventListener('click', loadData);
+  $('btn-insert-row').addEventListener('click', openInsertModal);
+
+  $('omni-input').addEventListener('input', onOmniInput);
+  $('omni-input').addEventListener('keydown', onOmniKeydown);
+  $('omni-clear').addEventListener('click', clearOmni);
+
+  $('btn-prev').addEventListener('click', () => {
+    if (state.db.currentPage > 1) {
+      state.db.currentPage--;
+      runTablePipeline();
+    }
+  });
+  $('btn-next').addEventListener('click', () => {
+    const totalPages = Math.ceil(state.db.rawTableData.length / state.db.pageSize);
+    if (state.db.currentPage < totalPages) {
+      state.db.currentPage++;
+      runTablePipeline();
+    }
+  });
+  $('page-size').addEventListener('change', (e) => {
+    state.db.pageSize = Number(e.target.value);
+    state.db.currentPage = 1;
+    runTablePipeline();
+  });
+
+  $('smm-action').addEventListener('change', (e) => { state.smm.action = e.target.value; renderSmmForm(); if (e.target.value === 'services') handleServicesFetch(); });
+  $('btn-execute-smm').addEventListener('click', (e) => executeSmmAction(e.target));
+  $('btn-toggle-raw').addEventListener('click', () => { const r = $('api-raw'); r.style.display = r.style.display === 'none' ? 'block' : 'none'; });
+}
+
+function initApp() {
+  loadAccounts(); renderProfileBar(); updateSafeModeUI(); bindEvents(); renderSmmForm(); initAfterProfileChange();
+}
+
+(async () => { initGoogleAuth(); })();
+</script>
+</body>
+</html>

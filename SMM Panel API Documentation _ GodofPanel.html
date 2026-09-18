@@ -1,0 +1,1500 @@
+<main class="site-content">
+  <section class="relative overflow-hidden ">
+    <div class="absolute inset-0 opacity-30 pointer-events-none">
+    </div>
+
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-10">
+      <header class="text-center space-y-4">
+        <span
+          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white shadow border border-orange-100 text-orange-600 text-sm font-semibold">
+          <i class="fas fa-code"></i> SMM Panel API
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900">SMM Panel API</h2>
+        <p class="text-gray-600 mt-2 max-w-2xl mx-auto">Integrate our powerful <strong>SMM panel</strong> API into
+          your platform. The best <strong>provider SMM panel</strong> API for resellers and developers.</p>
+      </header>
+
+      <div class="bg-white rounded-3xl shadow-lg border border-orange-100 p-6 sm:p-8 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="space-y-1">
+            <p class="text-xs font-semibold uppercase tracking-widest text-orange-500">HTTP Method</p>
+            <p class="text-xl font-bold text-gray-900">POST</p>
+          </div>
+          <div class="space-y-1">
+            <p class="text-xs font-semibold uppercase tracking-widest text-orange-500">API URL</p>
+            <p class="text-sm sm:text-base font-mono break-all text-gray-900">
+              https://godofpanel.com/api/v2
+            </p>
+          </div>
+          <div class="space-y-1">
+            <p class="text-xs font-semibold uppercase tracking-widest text-orange-500">Response format</p>
+            <p class="text-xl font-bold text-gray-900">JSON</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 rounded-2xl bg-orange-50 border border-orange-200 px-4 py-3">
+          <span class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
+            <i class="fas fa-key"></i>
+          </span>
+          <p class="text-sm text-orange-900">
+            Get an API key on the
+            <a href="https://godofpanel.com/account" class="font-semibold underline">
+              Account
+            </a> page
+          </p>
+        </div>
+      </div>
+
+      <div class="space-y-10">
+        <section class="bg-white rounded-[28px] shadow-lg border border-gray-200 p-6 sm:p-8 space-y-6">
+          <div class="flex items-center gap-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+              <i class="fas
+                                  fa-code
+                              "></i>
+            </span>
+            <h4 class="text-xl font-bold text-gray-900">
+              Service list
+            </h4>
+          </div>
+
+          <div class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">Parameters</p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    services
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="font-semibold text-gray-900">Example response</p>
+            <pre class="bg-gray-900 text-green-200 text-xs sm:text-sm p-4 rounded-xl overflow-auto">[
+    {
+        "service": 1,
+        "name": "Followers",
+        "type": "Default",
+        "category": "First Category",
+        "rate": "0.90",
+        "min": "50",
+        "max": "10000",
+        "refill": true,
+        "cancel": true
+    },
+    {
+        "service": 2,
+        "name": "Comments",
+        "type": "Custom Comments",
+        "category": "Second Category",
+        "rate": "8",
+        "min": "10",
+        "max": "1500",
+        "refill": false,
+        "cancel": true
+    }
+]
+            </pre>
+          </div>
+        </section>
+        <section class="bg-white rounded-[28px] shadow-lg border border-gray-200 p-6 sm:p-8 space-y-6">
+          <div class="flex items-center gap-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+              <i class="fas
+                                  fa-plus-circle
+                              "></i>
+            </span>
+            <h4 class="text-xl font-bold text-gray-900">
+              Add order
+            </h4>
+          </div>
+
+          <div class="mb-4">
+            <label for="service_type" class="block text-sm font-medium text-gray-700 mb-1">
+              Service type
+            </label>
+            <div class="inline-block">
+              <select class="form-control input-sm border-gray-300 rounded-md text-sm py-1.5 px-3" id="service_type">
+                <option value="0">Default</option>
+                <option value="10">Package</option>
+                <option value="1">SEO</option>
+                <option value="2">Custom Comments</option>
+                <option value="3">Mentions with Hashtags</option>
+                <option value="7">Mentions User Followers</option>
+                <option value="14">Custom Comments Package</option>
+                <option value="15">Comment Likes</option>
+                <option value="17">Poll</option>
+                <option value="20">Invites from Groups</option>
+                <option value="100">Subscriptions</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="type_0" style="display: block;" class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">
+                Parameters
+                <span class="ml-2 text-xs text-gray-500">(type: 0)</span>
+              </p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    add
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    service
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Service ID
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    link
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Link to page
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    quantity
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Needed quantity
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    runs (optional)
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Runs to deliver
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    interval (optional)
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Interval in minutes
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="type_10" style="display:none;" class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">
+                Parameters
+                <span class="ml-2 text-xs text-gray-500">(type: 10)</span>
+              </p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    add
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    service
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Service ID
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    link
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Link to page
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="type_1" style="display:none;" class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">
+                Parameters
+                <span class="ml-2 text-xs text-gray-500">(type: 1)</span>
+              </p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    add
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    service
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Service ID
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    link
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Link to page
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    quantity
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Needed quantity
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    keywords
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Keywords list separated by \r\n or \n
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="type_2" style="display:none;" class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">
+                Parameters
+                <span class="ml-2 text-xs text-gray-500">(type: 2)</span>
+              </p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    add
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    service
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Service ID
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    link
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Link to page
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    comments
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Comments list separated by \r\n or \n
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="type_3" style="display:none;" class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">
+                Parameters
+                <span class="ml-2 text-xs text-gray-500">(type: 3)</span>
+              </p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    add
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    service
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Service ID
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    link
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Link to page
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    quantity
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Needed quantity
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    usernames
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Usernames list separated by \r\n or \n
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    hashtags
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Hashtags list separated by \r\n or \n
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="type_7" style="display:none;" class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">
+                Parameters
+                <span class="ml-2 text-xs text-gray-500">(type: 7)</span>
+              </p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    add
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    service
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Service ID
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    link
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Link to page
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    quantity
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Needed quantity
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    username
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    URL to scrape followers from
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="type_100" style="display:none;" class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">
+                Parameters
+                <span class="ml-2 text-xs text-gray-500">(type: 100)</span>
+              </p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    add
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    service
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Service ID
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    username
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Username
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    min
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Quantity min
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    max
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Quantity max
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    posts (optional)
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Use this parameter if you want to limit the number of new (future) posts that will be parsed and
+                    for which orders will be created. If posts parameter is not set, the subscription will be created
+                    for an unlimited number of posts.
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    old_posts (optional)
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Number of existing posts that will be parsed and for which orders will be created, can be used if
+                    this option is available for the service.
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    delay
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Delay in minutes. Possible values: 0, 5, 10, 15, 20, 30, 40, 50, 60, 90, 120, 150, 180, 210, 240,
+                    270, 300, 360, 420, 480, 540, 600
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    expiry (optional)
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Expiry date. Format d/m/Y
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="type_14" style="display:none;" class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">
+                Parameters
+                <span class="ml-2 text-xs text-gray-500">(type: 14)</span>
+              </p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    add
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    service
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Service ID
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    link
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Link to page
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    comments
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Comments list separated by \r\n or \n
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="type_15" style="display:none;" class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">
+                Parameters
+                <span class="ml-2 text-xs text-gray-500">(type: 15)</span>
+              </p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    add
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    service
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Service ID
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    link
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Link to page
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    quantity
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Needed quantity
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    username
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Username of the comment owner
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="type_17" style="display:none;" class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">
+                Parameters
+                <span class="ml-2 text-xs text-gray-500">(type: 17)</span>
+              </p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    add
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    service
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Service ID
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    link
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Link to page
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    quantity
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Needed quantity
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    answer_number
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Answer number of the poll
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="type_20" style="display:none;" class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">
+                Parameters
+                <span class="ml-2 text-xs text-gray-500">(type: 20)</span>
+              </p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    add
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    service
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Service ID
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    link
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Link to page
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    quantity
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Needed quantity
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    groups
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Groups list separated by \r\n or \n
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="font-semibold text-gray-900">Example response</p>
+            <pre class="bg-gray-900 text-green-200 text-xs sm:text-sm p-4 rounded-xl overflow-auto">{
+    "order": 23501
+}
+            </pre>
+          </div>
+        </section>
+        <section class="bg-white rounded-[28px] shadow-lg border border-gray-200 p-6 sm:p-8 space-y-6">
+          <div class="flex items-center gap-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+              <i class="fas
+                                  fa-magnifying-glass
+                              "></i>
+            </span>
+            <h4 class="text-xl font-bold text-gray-900">
+              Order status
+            </h4>
+          </div>
+
+          <div class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">Parameters</p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    status
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    order
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Order ID
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="font-semibold text-gray-900">Example response</p>
+            <pre class="bg-gray-900 text-green-200 text-xs sm:text-sm p-4 rounded-xl overflow-auto">{
+    "charge": "0.27819",
+    "start_count": "3572",
+    "status": "Partial",
+    "remains": "157",
+    "currency": "USD"
+}
+            </pre>
+          </div>
+        </section>
+        <section class="bg-white rounded-[28px] shadow-lg border border-gray-200 p-6 sm:p-8 space-y-6">
+          <div class="flex items-center gap-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+              <i class="fas
+                                  fa-code
+                              "></i>
+            </span>
+            <h4 class="text-xl font-bold text-gray-900">
+              Multiple orders status
+            </h4>
+          </div>
+
+          <div class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">Parameters</p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    status
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    orders
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Order IDs (separated by a comma, up to 100 IDs)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="font-semibold text-gray-900">Example response</p>
+            <pre class="bg-gray-900 text-green-200 text-xs sm:text-sm p-4 rounded-xl overflow-auto">{
+    "1": {
+        "charge": "0.27819",
+        "start_count": "3572",
+        "status": "Partial",
+        "remains": "157",
+        "currency": "USD"
+    },
+    "10": {
+        "error": "Incorrect order ID"
+    },
+    "100": {
+        "charge": "1.44219",
+        "start_count": "234",
+        "status": "In progress",
+        "remains": "10",
+        "currency": "USD"
+    }
+}
+            </pre>
+          </div>
+        </section>
+        <section class="bg-white rounded-[28px] shadow-lg border border-gray-200 p-6 sm:p-8 space-y-6">
+          <div class="flex items-center gap-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+              <i class="fas
+                                  fa-code
+                              "></i>
+            </span>
+            <h4 class="text-xl font-bold text-gray-900">
+              Create refill
+            </h4>
+          </div>
+
+          <div class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">Parameters</p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    refill
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    order
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Order ID
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="font-semibold text-gray-900">Example response</p>
+            <pre class="bg-gray-900 text-green-200 text-xs sm:text-sm p-4 rounded-xl overflow-auto">{
+    "refill": "1"
+}
+            </pre>
+          </div>
+        </section>
+        <section class="bg-white rounded-[28px] shadow-lg border border-gray-200 p-6 sm:p-8 space-y-6">
+          <div class="flex items-center gap-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+              <i class="fas
+                                  fa-code
+                              "></i>
+            </span>
+            <h4 class="text-xl font-bold text-gray-900">
+              Create multiple refill
+            </h4>
+          </div>
+
+          <div class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">Parameters</p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    refill
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    orders
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Order IDs (separated by a comma, up to 100 IDs)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="font-semibold text-gray-900">Example response</p>
+            <pre class="bg-gray-900 text-green-200 text-xs sm:text-sm p-4 rounded-xl overflow-auto">[
+    {
+        "order": 1,
+        "refill": 1
+    },
+    {
+        "order": 2,
+        "refill": 2
+    },
+    {
+        "order": 3,
+        "refill": {
+            "error": "Incorrect order ID"
+        }
+    }
+]
+            </pre>
+          </div>
+        </section>
+        <section class="bg-white rounded-[28px] shadow-lg border border-gray-200 p-6 sm:p-8 space-y-6">
+          <div class="flex items-center gap-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+              <i class="fas
+                                  fa-code
+                              "></i>
+            </span>
+            <h4 class="text-xl font-bold text-gray-900">
+              Get refill status
+            </h4>
+          </div>
+
+          <div class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">Parameters</p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    refill_status
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    refill
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Refill ID
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="font-semibold text-gray-900">Example response</p>
+            <pre class="bg-gray-900 text-green-200 text-xs sm:text-sm p-4 rounded-xl overflow-auto">{
+    "status": "Completed"
+}
+            </pre>
+          </div>
+        </section>
+        <section class="bg-white rounded-[28px] shadow-lg border border-gray-200 p-6 sm:p-8 space-y-6">
+          <div class="flex items-center gap-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+              <i class="fas
+                                  fa-code
+                              "></i>
+            </span>
+            <h4 class="text-xl font-bold text-gray-900">
+              Get multiple refill status
+            </h4>
+          </div>
+
+          <div class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">Parameters</p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    refill_status
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    refills
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Refill IDs (separated by a comma, up to 100 IDs)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="font-semibold text-gray-900">Example response</p>
+            <pre class="bg-gray-900 text-green-200 text-xs sm:text-sm p-4 rounded-xl overflow-auto">[
+    {
+        "refill": 1,
+        "status": "Completed"
+    },
+    {
+        "refill": 2,
+        "status": "Rejected"
+    },
+    {
+        "refill": 3,
+        "status": {
+            "error": "Refill not found"
+        }
+    }
+]
+            </pre>
+          </div>
+        </section>
+        <section class="bg-white rounded-[28px] shadow-lg border border-gray-200 p-6 sm:p-8 space-y-6">
+          <div class="flex items-center gap-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+              <i class="fas
+                                  fa-code
+                              "></i>
+            </span>
+            <h4 class="text-xl font-bold text-gray-900">
+              Create cancel
+            </h4>
+          </div>
+
+          <div class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">Parameters</p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    cancel
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    orders
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Order IDs (separated by a comma, up to 100 IDs)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="font-semibold text-gray-900">Example response</p>
+            <pre class="bg-gray-900 text-green-200 text-xs sm:text-sm p-4 rounded-xl overflow-auto">[
+    {
+        "order": 9,
+        "cancel": {
+            "error": "Incorrect order ID"
+        }
+    },
+    {
+        "order": 2,
+        "cancel": 1
+    }
+]
+            </pre>
+          </div>
+        </section>
+        <section class="bg-white rounded-[28px] shadow-lg border border-gray-200 p-6 sm:p-8 space-y-6">
+          <div class="flex items-center gap-4">
+            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+              <i class="fas
+                                  fa-wallet
+                              "></i>
+            </span>
+            <h4 class="text-xl font-bold text-gray-900">
+              User balance
+            </h4>
+          </div>
+
+          <div class="overflow-hidden rounded-2xl border border-gray-200">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <p class="text-sm font-semibold text-gray-800">Parameters</p>
+            </div>
+            <div class="p-4 sm:p-5">
+              <div class="space-y-2 text-sm text-gray-700">
+                <div class="grid grid-cols-2 font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-2">
+                  <div>Parameter</div>
+                  <div>Description</div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    key
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    Your API key
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div class="font-mono text-xs sm:text-sm text-gray-800 break-all">
+                    action
+                  </div>
+                  <div class="text-xs sm:text-sm text-gray-700">
+                    balance
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <p class="font-semibold text-gray-900">Example response</p>
+            <pre class="bg-gray-900 text-green-200 text-xs sm:text-sm p-4 rounded-xl overflow-auto">{
+    "balance": "100.84292",
+    "currency": "USD"
+}
+            </pre>
+          </div>
+        </section>
+      </div>
+
+      <div class="text-center">
+        <a href="https://godofpanel.com/example.txt"
+          class="inline-flex items-center gap-2 bg-white border border-gray-300 text-gray-800 px-5 py-2.5 rounded-full text-sm font-semibold shadow hover:bg-gray-50"
+          title="SMM Panel API PHP Code Example">
+          <i class="fas fa-code"></i>
+          Example of PHP code
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://godofpanel.com/"},
+    {"@type": "ListItem", "position": 2, "name": "API", "item": "https://godofpanel.com/api"}
+  ]
+}
+</script>
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "SMM Panel API - GodofPanel Provider API",
+  "description": "GodofPanel SMM Panel API documentation. Integrate the best provider SMM panel services into your platform with our powerful API. Cheapest SMM panel API for resellers.",
+  "url": "https://godofpanel.com/api",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "GodofPanel",
+    "url": "https://godofpanel.com"
+  }
+}
+</script>
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I integrate the GodofPanel SMM panel API?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Send HTTP POST requests to our API endpoint with your API key and JSON parameters. Our provider SMM panel API supports placing orders, checking status, and viewing balance. Full documentation and PHP code examples are available on this page."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What response format does the API use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The GodofPanel SMM panel API returns all responses in JSON format, making it easy to integrate with any programming language or platform."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where do I get my API key?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can generate your API key from the Account page after signing in to your GodofPanel SMM panel dashboard."
+      }
+    }
+  ]
+}
+</script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var select = document.getElementById('service_type');
+      if (!select) return;
+
+      function showType(type) {
+        var blocks = document.querySelectorAll('[id^="type_"]');
+        blocks.forEach(function (el) {
+          el.style.display = 'none';
+        });
+        var target = document.getElementById('type_' + type);
+        if (target) {
+          target.style.display = 'block';
+        }
+      }
+
+      showType(select.value);
+      select.addEventListener('change', function () {
+        showType(this.value);
+      });
+    });
+  </script>
+
+</main>
+
+
+
+</body>
+
+</html>
