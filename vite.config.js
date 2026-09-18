@@ -27,12 +27,17 @@ const readBody = (req) => new Promise((resolve, reject) => {
 
 export default defineConfig({
   server: {
-    port: 3000,
+    port: Number(process.env.PORT) || 3000,
     host: true
+  },
+  preview: {
+    port: Number(process.env.PORT) || 3000,
+    host: true,
+    allowedHosts: true
   },
   plugins: [{
     name: 'admin-portal-v5',
-    async configureServer(server) {
+    configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         if (req.method !== 'POST') return next();
 
@@ -184,6 +189,9 @@ export default defineConfig({
           if (conn) await conn.end().catch(() => {});
         }
       });
+    },
+    configurePreviewServer(server) {
+      return this.configureServer(server);
     }
   }]
 });
